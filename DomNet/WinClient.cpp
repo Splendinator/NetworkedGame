@@ -24,8 +24,7 @@ int domnet::WinClient::connect(const Address &a)
 		*result = NULL,
 		*ptr = NULL,
 
-		hintsTCP,
-		hintsUDP;
+		hintsTCP;
 
 	ZeroMemory(&hintsTCP, sizeof(hintsTCP));
 	hintsTCP.ai_family = AF_INET;
