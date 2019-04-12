@@ -28,15 +28,37 @@ PxMaterial*				gMaterial = nullptr;
 
 PxPvd*                  gPvd = nullptr;
 
+PxRigidDynamic *cube = nullptr;
+
 int main() {
 
 
-	PxTolerancesScale scale;
-	scale.length = 100;        // typical length of an object
-	scale.speed = 981;         // typical speed of an object, gravity*1s is a reasonable choice
-
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, nullptr);
+
+	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	gDispatcher = PxDefaultCpuDispatcherCreate(2);
+	sceneDesc.cpuDispatcher = gDispatcher;
+	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	gScene = gPhysics->createScene(sceneDesc);
+
+	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+
+	PxShape* shape = gPhysics->createShape(PxBoxGeometry(1, 1, 1), *gMaterial);
+
+	PxTransform localTm(PxVec3(0,0,0));
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
+	body->attachShape(*shape);
+	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+	gScene->addActor(*body);
+
+	for (int i = 0; i < 1000; ++i) {
+		gScene->simulate(1.0f / 120.0f);
+		gScene->fetchResults(true);
+		cout << body->getGlobalPose().p.y << "\n";
+	}
 
 
 	getchar();
