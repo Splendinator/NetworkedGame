@@ -44,7 +44,7 @@ inline Matrix<T, N>& Matrix<T, N>::toIdentity()
 {
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < N; ++j) {
-			data[i][j] = int(j == i);
+			data[i][j] = float(j == i);
 		}
 	}
 	return *this;
