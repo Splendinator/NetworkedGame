@@ -5,10 +5,20 @@
 #include "Mesh.h"
 #include "IO.h"
 #include <iostream>
+#include "Renderable.h"
+#include "Math.h"
+#include "Camera.h"
+
+Camera camera;
 
 Window w;
 GLuint shaderVertex, shaderFragment;
 GLuint programID;
+
+GLuint VertexArrayID;
+GLuint vertexbuffer;
+
+Mesh *m = Mesh::genCube();
 
 void initGL() {
 	if (!GL::isInitialized()) {
@@ -60,6 +70,12 @@ void initShaders() {
 		programID = 0;
 	}
 
+	glUseProgram(programID);
+
+}
+
+void initVAO() {
+	m->bufferMesh();
 }
 
 Graphics::Graphics()
@@ -67,15 +83,65 @@ Graphics::Graphics()
 
 }
 
+void passView() {
+	mat4f view = camera.buildViewMatrix();
+	
+	
+	glUniformMatrix4fv(1, 1, false, (GLfloat *)&view);
+}
+
+void passProj(){
+
+	static mat4f proj = Math::buildPerspectiveMatrix(110, 1.77777777778f, 0.01f, 10);
+	glUniformMatrix4fv(0, 1, false, (GLfloat *)&proj);
+
+}
+
 void tempFunc() {
-	Mesh *m = Mesh::genCube();
+	
+	Renderable r(m);
+	r.model.toIdentity();
+	
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m->getVertexID());
+	glVertexAttribPointer(
+		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized? 
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
 
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, m->getNormalID());
+	glVertexAttribPointer(
+		1,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized? 
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
+
+	passProj();
+	camera.pos[2] = 3.f;
+	camera.pos[0] += 2.0f;
+	camera.yaw = -0.2f;
+	camera.pitch = -0.4f;
+	camera.pos[1] = 2.0f;
+	
 	while (true) {
+		
+		passView();
+		glDrawArrays(GL_TRIANGLES, 0, m->getNumVerts());
+		//glDrawElements(GL_TRIANGLES, m->getNumInds(), GL_UNSIGNED_INT, 0);
+		//camera.yaw += 0.01f;
+		//camera.pos[2] += 0.01f;
 
-		glClearColor(rand() & 1000 / 1000, rand() & 1000 / 1000, rand() & 1000 / 1000, 1);
-
-		glClear(GL_COLOR_BUFFER_BIT);
+		
 		SwapBuffers(w.getContextDevice());
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }
 
@@ -89,6 +155,7 @@ void Graphics::initialize() {
 
 	initGL();
 	initShaders();
+	initVAO();
 
 	tempFunc();
 }

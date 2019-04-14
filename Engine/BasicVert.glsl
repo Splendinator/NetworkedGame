@@ -1,10 +1,14 @@
-#version 330 core
-layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
-  
-out vec4 vertexColor; // specify a color output to the fragment shader
+#version 430 core
+
+layout(location = 0) uniform mat4 proj;
+layout(location = 1) uniform mat4 view;
+layout(location = 2) uniform mat4 model;
+
+
+in vec3 pos;
+in vec3 norm;
 
 void main()
 {
-    gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
-    vertexColor = vec4(0.5, 0.0, 0.0, 1.0); // set the output variable to a dark-red color
+	gl_Position = vec4(pos + norm, 1.0) *view * proj;
 }

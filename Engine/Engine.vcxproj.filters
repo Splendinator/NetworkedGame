@@ -57,6 +57,9 @@
     <ClCompile Include="Window.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Renderable.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="IO.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

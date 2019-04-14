@@ -11,6 +11,16 @@ inline Vector<T, N>::Vector(std::initializer_list<T> il)
 	}
 }
 
+template<class T, int N>
+Vector<T, N> Vector<T, N>::operator-() const
+{
+	Vector<T, N> ret;
+	for (int i = 0; i < N; ++i) {
+		ret[i] = -data[i];
+	}
+	return ret;
+}
+
 template class Vector<float, 2>;
 template class Vector<float, 3>;
 template class Vector<float, 4>;

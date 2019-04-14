@@ -2,16 +2,16 @@
 
 #include "Matrix.h"
 
-class Math
+namespace Math
 {
-public:
-	Math();
-	~Math();
+	static const float PI = 3.14159265359f;
 
-	static mat4f buildScaleMatrix(vec3f v);
-	static mat4f buildTranslateMatrix(vec3f v);
-	static mat4f buildRotateMatrixX(float rad);
-	static mat4f buildRotateMatrixY(float rad);
-	static mat4f buildRotateMatrixZ(float rad);
+	mat4f buildScaleMatrix(vec3f v);
+	mat4f buildTranslateMatrix(vec3f v);
+	mat4f buildRotateMatrixX(float rad);
+	mat4f buildRotateMatrixY(float rad);
+	mat4f buildRotateMatrixZ(float rad);
+	mat4f buildPerspectiveMatrix(float fov, float aspect, float near, float far);
 };
 
+//Math::PI = 3.14159265359f;

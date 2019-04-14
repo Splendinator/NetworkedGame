@@ -6,6 +6,6 @@ public:
 	~Graphics();
 
 	void initialize();
-	
+
 };
 

@@ -14,8 +14,8 @@ public:
 
 	T &operator[](int n) { return data[n]; }
 	const T &operator[](int n) const { return data[n]; }
-
-
+	
+	Vector<T, N> operator- () const;
 private:
 	T data[N];
 };

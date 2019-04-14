@@ -35,7 +35,7 @@ void Window::threadInit() {
 		CLASS_NAME,                     // Window class
 		"Dominic's Program",    // Window text
 		CS_OWNDC/* | WS_OVERLAPPEDWINDOW  | WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/,            // Window style
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT, 1440, 900,
 
 		NULL,       // Parent window    
 		NULL,       // Menu
@@ -61,8 +61,8 @@ void Window::threadInit() {
 		0,
 		0,
 		0, 0, 0, 0,
-		32,                   // Number of bits for the depthbuffer
-		0,                    // Number of bits for the stencilbuffer
+		24,                   // Number of bits for the depthbuffer
+		8,                    // Number of bits for the stencilbuffer
 		0,                    // Number of Aux buffers in the framebuffer.
 		PFD_MAIN_PLANE,
 		0,
