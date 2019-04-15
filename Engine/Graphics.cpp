@@ -8,6 +8,7 @@
 #include "Renderable.h"
 #include "Math.h"
 #include "Camera.h"
+#include "Transform.h"
 
 Camera camera;
 
@@ -19,6 +20,8 @@ GLuint VertexArrayID;
 GLuint vertexbuffer;
 
 Mesh *m = Mesh::genCube();
+
+std::vector<Transform *> cubes;
 
 void initGL() {
 	if (!GL::isInitialized()) {
@@ -97,10 +100,7 @@ void passProj(){
 
 }
 
-void tempFunc() {
-	
-	Renderable r(m);
-	r.model.toIdentity();
+void setUpCubes() {
 	
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m->getVertexID());
@@ -124,25 +124,21 @@ void tempFunc() {
 		(void*)0            // array buffer offset
 	);
 
-	passProj();
-	camera.pos[2] = 3.f;
-	camera.pos[0] += 2.0f;
-	camera.yaw = -0.2f;
-	camera.pitch = -0.4f;
-	camera.pos[1] = 2.0f;
-	
-	while (true) {
-		
-		passView();
-		glDrawArrays(GL_TRIANGLES, 0, m->getNumVerts());
-		//glDrawElements(GL_TRIANGLES, m->getNumInds(), GL_UNSIGNED_INT, 0);
-		//camera.yaw += 0.01f;
-		//camera.pos[2] += 0.01f;
+}
 
-		
-		SwapBuffers(w.getContextDevice());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void drawCubes() {
+
+	for (auto cube : cubes) {
+		glDrawArrays(GL_TRIANGLES, 0, m->getNumVerts());
 	}
+	SwapBuffers(w.getContextDevice());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Graphics::update() {
+	setUpCubes();
+	passView();
+	drawCubes();
 }
 
 void Graphics::initialize() {
@@ -157,7 +153,22 @@ void Graphics::initialize() {
 	initShaders();
 	initVAO();
 
-	tempFunc();
+	passProj();
+	
+	//*** TEMP ***
+	camera.pos[2] = 3.f;
+	camera.pos[0] += 2.0f;
+	camera.yaw = -0.2f;
+	camera.pitch = -0.4f;
+	camera.pos[1] = 2.0f;
+
+}
+
+Transform *Graphics::addCube()
+{
+	Transform *p = new Transform();
+	cubes.push_back(p);
+	return p;
 }
 
 Graphics::~Graphics()

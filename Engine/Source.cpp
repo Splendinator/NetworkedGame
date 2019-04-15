@@ -1,10 +1,16 @@
 #include <iostream>
 #include "Vector.h"
-#include "Graphics.h"
+#include "Engine.h"
+
 
 int main() {
-	Graphics g;
-	g.initialize();
+
+	Engine::init();
+	Engine::addCube();
+	Engine::update(0.01f);
+
+
+	
 
 	getchar();
 }

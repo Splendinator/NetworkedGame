@@ -10,5 +10,5 @@ in vec3 norm;
 
 void main()
 {
-	gl_Position = vec4(pos + norm, 1.0) *view * proj;
+	gl_Position = vec4(pos, 1.0) *view * proj;
 }

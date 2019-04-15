@@ -1,4 +1,7 @@
 #pragma once
+
+class Transform;
+
 class Graphics
 {
 public:
@@ -6,6 +9,9 @@ public:
 	~Graphics();
 
 	void initialize();
+	Transform *addCube();
+	void update();
 
+	
 };
 

@@ -57,8 +57,17 @@
     <ClCompile Include="Window.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Renderable.cpp">
-      <Filter>Graphics</Filter>
+    <ClCompile Include="Physics.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,8 +98,17 @@
     <ClInclude Include="IO.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Renderable.h">
-      <Filter>Graphics</Filter>
+    <ClInclude Include="Physics.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
