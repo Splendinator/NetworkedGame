@@ -20,46 +20,48 @@ Mesh * Mesh::genCube()
 
 	m->numVerts = 36;
 
-	m->verts = new vec3f[m->numVerts];
+	m->verts = new Vec3f[m->numVerts];
 	m->inds = nullptr;
-	m->normals = new vec3f[m->numVerts];
+	m->normals = new Vec3f[m->numVerts];
 
-	m->verts[ 0] = { 1.f, 1.f, 1.f};
-	m->verts[ 1] = {-1.f, 1.f, 1.f};
-	m->verts[ 2] = {-1.f, -1.f, 1.f};
-	m->verts[ 3] = { 1.f, -1.f, 1.f};
-	m->verts[ 4] = { 1.f, 1.f, 1.f};
-	m->verts[ 5] = {-1.f, -1.f, 1.f}; 
-	m->verts[ 6] = { 1.f, -1.f, 1.f};
-	m->verts[ 7] = { 1.f, 1.f, 1.f};
-	m->verts[ 8] = { 1.f, 1.f, -1.f};
-	m->verts[ 9] = { 1.f, -1.f, -1.f};
-	m->verts[10] = { 1.f, -1.f, 1.f};
-	m->verts[11] = { 1.f, 1.f, -1.f};
-	m->verts[12] = {-1.f, 1.f, -1.f};
-	m->verts[13] = { 1.f, 1.f, -1.f};
-	m->verts[14] = { 1.f, -1.f, -1.f};
-	m->verts[15] = {-1.f, -1.f, -1.f};
-	m->verts[16] = {-1.f, 1.f, -1.f};
-	m->verts[17] = { 1.f, -1.f, -1.f};
-	m->verts[18] = {-1.f, 1.f, 1.f};
-	m->verts[19] = {-1.f, 1.f, -1.f};
-	m->verts[20] = {-1.f, -1.f, -1.f};
-	m->verts[21] = {-1.f, -1.f, 1.f};
-	m->verts[22] = {-1.f, 1.f, 1.f};
-	m->verts[23] = {-1.f, -1.f, -1.f};
-	m->verts[24] = {-1.f, 1.f, -1.f};
-	m->verts[25] = { 1.f, 1.f, -1.f};
-	m->verts[26] = {-1.f, 1.f, 1.f};
-	m->verts[27] = { 1.f, 1.f, 1.f};
-	m->verts[28] = {-1.f, 1.f, -1.f};
-	m->verts[29] = {-1.f, 1.f, 1.f};
-	m->verts[30] = { 1.f, -1.f, 1.f};
-	m->verts[31] = {-1.f, -1.f, 1.f};
-	m->verts[32] = { 1.f, -1.f, -1.f};
-	m->verts[33] = {-1.f, -1.f, -1.f};
-	m->verts[34] = { 1.f, -1.f, 1.f};
-	m->verts[35] = { 1.f, -1.f, -1.f};
+	m->verts[0] = { -1.0, -1.0,  1.0 };
+	m->verts[1] = { 1.f, -1.f,  1.f };
+	m->verts[2] = { 1.0,  1.0,  1.0 };
+	m->verts[3] = { 1.0,  1.0,  1.0 };
+	m->verts[4] = { -1.0,  1.0,  1.0 };
+	m->verts[5] = { -1.0, -1.0,  1.0 };
+	m->verts[6] = { 1.f, -1.f,  1.f };
+	m->verts[7] = { 1.0, -1.0, -1.0 };
+	m->verts[8] = { 1.0,  1.0, -1.0 };
+	m->verts[9] = { 1.0,  1.0, -1.0 };
+	m->verts[10] = { 1.0,  1.0,  1.0 };
+	m->verts[11] = { 1.f, -1.f,  1.f };
+	m->verts[12] = { -1.0,  1.0, -1.0 };
+	m->verts[13] = { 1.0,  1.0, -1.0 };
+	m->verts[14] = { 1.0, -1.0, -1.0 };
+	m->verts[15] = { 1.0, -1.0, -1.0 };
+	m->verts[16] = { -1.0, -1.0, -1.0 };
+	m->verts[17] = { -1.0,  1.0, -1.0 };
+	m->verts[18] = { -1.0, -1.0, -1.0 };
+	m->verts[19] = { -1.0, -1.0,  1.0 };
+	m->verts[20] = { -1.0,  1.0,  1.0 };
+	m->verts[21] = { -1.0,  1.0,  1.0 };
+	m->verts[22] = { -1.0,  1.0, -1.0 };
+	m->verts[23] = { -1.0, -1.0, -1.0 };
+	m->verts[24] = { -1.0, -1.0, -1.0 };
+	m->verts[25] = { 1.0, -1.0, -1.0 };
+	m->verts[26] = { 1.f, -1.f,  1.f };
+	m->verts[27] = { 1.f, -1.f,  1.f };
+	m->verts[28] = { -1.0, -1.0,  1.0 };
+	m->verts[29] = { -1.0, -1.0, -1.0 };
+	m->verts[30] = { -1.0,  1.0,  1.0 };
+	m->verts[31] = { 1.0,  1.0,  1.0 };
+	m->verts[32] = { 1.0,  1.0, -1.0 };
+	m->verts[33] = { 1.0,  1.0, -1.0 };
+	m->verts[34] = { -1.0,  1.0, -1.0 };
+	m->verts[35] = { -1.0,  1.0,  1.0 };
+
+	
 
 	m->normals[0]	= {0.0f,0.0f,1.0f};
 	m->normals[1]	= {0.0f,0.0f,1.0f};
@@ -108,7 +110,7 @@ void Mesh::bufferMesh()
 
 	glGenBuffers(1, &vertexID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexID);
-	glBufferData(GL_ARRAY_BUFFER, numVerts * sizeof(vec3f), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, numVerts * sizeof(Vec3f), verts, GL_STATIC_DRAW);
 
 	if (inds) {
 		glGenBuffers(1, &indiciesID);
@@ -119,6 +121,6 @@ void Mesh::bufferMesh()
 	if (normals) {
 		glGenBuffers(1, &normalsID);
 		glBindBuffer(GL_ARRAY_BUFFER, normalsID);
-		glBufferData(GL_ARRAY_BUFFER, numVerts * sizeof(vec3f), normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, numVerts * sizeof(Vec3f), normals, GL_STATIC_DRAW);
 	}
 }

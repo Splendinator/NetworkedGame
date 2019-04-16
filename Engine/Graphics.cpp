@@ -87,7 +87,7 @@ Graphics::Graphics()
 }
 
 void passView() {
-	mat4f view = camera.buildViewMatrix();
+	Mat4f view = camera.buildViewMatrix();
 	
 	
 	glUniformMatrix4fv(1, 1, false, (GLfloat *)&view);
@@ -95,7 +95,7 @@ void passView() {
 
 void passProj(){
 
-	static mat4f proj = Math::buildPerspectiveMatrix(110, 1.77777777778f, 0.01f, 10);
+	static Mat4f proj = Math::buildPerspectiveMatrix(110, 1.77777777778f, 0.01f, 10);
 	glUniformMatrix4fv(0, 1, false, (GLfloat *)&proj);
 
 }
@@ -129,6 +129,9 @@ void setUpCubes() {
 void drawCubes() {
 
 	for (auto cube : cubes) {
+		cube->update();
+		Mat4f model = cube->getModelMatrix();
+		glUniformMatrix4fv(2, 1, false, (GLfloat *)&model);
 		glDrawArrays(GL_TRIANGLES, 0, m->getNumVerts());
 	}
 	SwapBuffers(w.getContextDevice());
@@ -153,6 +156,9 @@ void Graphics::initialize() {
 	initShaders();
 	initVAO();
 
+	//glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+
 	passProj();
 	
 	//*** TEMP ***
@@ -164,9 +170,12 @@ void Graphics::initialize() {
 
 }
 
-Transform *Graphics::addCube()
+Transform *Graphics::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic)
 {
 	Transform *p = new Transform();
+	p->_pos = pos;
+	p->_scale = scale;
+	p->_rot = rot;
 	cubes.push_back(p);
 	return p;
 }

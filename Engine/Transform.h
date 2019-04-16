@@ -2,7 +2,7 @@
 #include "Quaternion.h"
 #include "PxRigidDynamic.h"
 
-class physx::PxRigidDynamic;
+class physx::PxRigidActor;
 class Mesh;
 
 
@@ -12,12 +12,18 @@ public:
 	Transform();
 	~Transform();
 
-	void setRigidBody(physx::PxRigidDynamic *p) { _rigidbody = p; }
+	void setRigidBody(physx::PxRigidActor *p) { _rigidbody = p; }
+	Mat4f getModelMatrix();
 
-	physx::PxRigidDynamic *_rigidbody;
+	void update();
+
+	Mat4f _modelMatrix;
+	bool _dirty = true;
+
+	physx::PxRigidActor *_rigidbody;
 	
-	quatf _rot;
-	vec3f _pos;
-	vec3f _scale;
+	Quatf _rot;
+	Vec3f _pos;
+	Vec3f _scale;
 };
 

@@ -11,7 +11,7 @@ Camera::~Camera()
 {
 }
 
-mat4f Camera::buildViewMatrix()
+Mat4f Camera::buildViewMatrix()
 {
 	return
 		Math::buildRotateMatrixX(-pitch)

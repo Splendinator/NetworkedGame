@@ -21,11 +21,11 @@ public:
 private:
 	unsigned int numInds, numVerts;
 	
-	vec3f *verts;
-	vec3f *normals;
+	Vec3f *verts;
+	Vec3f *normals;
 	unsigned int *inds;
 
-	vec3f colour;
+	Vec3f colour;
 	unsigned int vaoID;
 	unsigned int vertexID;
 	unsigned int normalsID;

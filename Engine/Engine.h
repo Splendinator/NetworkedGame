@@ -1,8 +1,10 @@
 #include "Quaternion.h"
 #include "Transform.h"
 
-namespace Engine {
+struct Engine {
 	void init();
 	void update(float delta);
-	Transform *addCube(); //TODO: ADD POS/SCALE/ROT;
-}
+	Transform *addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic = true);
+
+	~Engine();
+};

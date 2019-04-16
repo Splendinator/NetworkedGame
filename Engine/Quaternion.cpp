@@ -53,6 +53,27 @@ Vector<T, 3> Quaternion<T>::eulerFromQuat(Quaternion<T> q)
 	return { roll,pitch,yaw };
 }
 
+template<class T>
+Mat4f Quaternion<T>::toMat4()
+{
+	Mat4f m;
+
+	m.toIdentity();
+
+	m[0][0] = 1 - 2*(y*y) - 2*(z*z);
+	m[0][1] = 2*(x*y) - 2*(z*w);
+	m[0][2] = 2*(x*z) + 2*(w*y);
+	m[1][0] = 2*(x*y) + 2*(z*w);
+	m[1][1] = 1 - 2*(x*x) - 2*(z*z);
+	m[1][2] = 2*(y*z) - 2*(x*w);
+	m[2][0] = 2*(x*z) - 2*(y*w);
+	m[2][1] = 2*(y*z) + 2*(x*w);
+	m[2][2] = 1 - 2*(x*x) - 2*(y*y);
+	
+
+	return m;
+}
+
 
 template class Quaternion<float>;
 

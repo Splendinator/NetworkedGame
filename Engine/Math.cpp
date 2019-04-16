@@ -2,9 +2,9 @@
 #include <math.h>
 
 
-mat4f Math::buildScaleMatrix(vec3f v)
+Mat4f Math::buildScaleMatrix(Vec3f v)
 {
-	mat4f m;
+	Mat4f m;
 	m.toIdentity();
 
 	m[0][0] = v[0];
@@ -14,9 +14,9 @@ mat4f Math::buildScaleMatrix(vec3f v)
 	return m;
 }
 
-mat4f Math::buildTranslateMatrix(vec3f v)
+Mat4f Math::buildTranslateMatrix(Vec3f v)
 {
-	mat4f m;
+	Mat4f m;
 	m.toIdentity();
 	
 	m[0][3] = v[0];
@@ -26,9 +26,9 @@ mat4f Math::buildTranslateMatrix(vec3f v)
 	return m;
 }
 
-mat4f Math::buildRotateMatrixX(float rad)
+Mat4f Math::buildRotateMatrixX(float rad)
 {
-	mat4f m;
+	Mat4f m;
 	m.toIdentity();
 
 	m[1][1] = m[2][2] = static_cast<float>(cos(rad));
@@ -38,9 +38,9 @@ mat4f Math::buildRotateMatrixX(float rad)
 	return m;
 }
 
-mat4f Math::buildRotateMatrixY(float rad)
+Mat4f Math::buildRotateMatrixY(float rad)
 {
-	mat4f m;
+	Mat4f m;
 	m.toIdentity();
 
 	m[0][0] = m[2][2] = static_cast<float>(cos(rad));
@@ -50,9 +50,9 @@ mat4f Math::buildRotateMatrixY(float rad)
 	return m;
 }
 
-mat4f Math::buildRotateMatrixZ(float rad)
+Mat4f Math::buildRotateMatrixZ(float rad)
 {
-	mat4f m;
+	Mat4f m;
 	m.toIdentity();
 
 	m[0][0] = m[1][1] = static_cast<float>(cos(rad));
@@ -62,9 +62,9 @@ mat4f Math::buildRotateMatrixZ(float rad)
 	return m;
 }
 
-mat4f Math::buildPerspectiveMatrix(float fov, float aspect, float near, float far)
+Mat4f Math::buildPerspectiveMatrix(float fov, float aspect, float near, float far)
 {
-	mat4f m;
+	Mat4f m;
 	m.toIdentity();
 
 	float top = near * float(tan(Math::PI / 180.f * (fov / 2.f)));

@@ -8,7 +8,7 @@ public:
 	Renderable(Mesh *m) {mesh = m;}
 	~Renderable();
 
-	mat4f model;
+	Mat4f model;
 private:
 	Mesh *mesh;
 	

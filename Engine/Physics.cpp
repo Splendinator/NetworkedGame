@@ -54,15 +54,31 @@ namespace Physics {
 		gScene->simulate(delta);
 		gScene->fetchResults(true);
 	}
+
+	void cleanUp()
+	{
+		gFoundation->release();
+		gPhysics->release();
+	}
 	
-	PxRigidDynamic *addOBB() {
+	PxRigidActor *addOBB(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
 
-		PxShape* shape = gPhysics->createShape(PxBoxGeometry(1, 1, 1), *gMaterial);
+		PxShape* shape = gPhysics->createShape(PxBoxGeometry(scale[0], scale[1], scale[2]), *gMaterial);
 
-		PxTransform localTm(PxVec3(0, 0, 0));
-		PxRigidDynamic* body = gPhysics->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
+		PxTransform localTm(PxVec3(pos[0], pos[1], pos[2]));
+		localTm.q.x = rot.x;
+		localTm.q.y = rot.y;
+		localTm.q.z = rot.z;
+		localTm.q.w = rot.w;
+		PxRigidActor *body;
+		if (dynamic) {
+			body = gPhysics->createRigidDynamic(localTm);
+			PxRigidBodyExt::updateMassAndInertia(*(PxRigidDynamic *)body, 10.0f);
+		}
+		else {
+			body = gPhysics->createRigidStatic(localTm);
+		}
 		body->attachShape(*shape);
-		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 		gScene->addActor(*body);
 		return body;
 	}

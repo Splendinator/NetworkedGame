@@ -1957,7 +1957,7 @@ typedef void (GLAPIENTRY * PFNGLVERTEXATTRIBPOINTERPROC) (GLuint index, GLint si
 #define glUniform4f GLEW_GET_FUN(__glewUniform4f)
 #define glUniform4fv GLEW_GET_FUN(__glewUniform4fv)
 #define glUniform4i GLEW_GET_FUN(__glewUniform4i)
-#define glUniform4iv GLEW_GET_FUN(__glewUniform4iv)
+#define glUniform4iv GLEW_GET_FUN(__glewUniform4iv) 
 #define glUniformMatrix2fv GLEW_GET_FUN(__glewUniformMatrix2fv)
 #define glUniformMatrix3fv GLEW_GET_FUN(__glewUniformMatrix3fv)
 #define glUniformMatrix4fv GLEW_GET_FUN(__glewUniformMatrix4fv)

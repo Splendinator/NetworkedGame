@@ -4,21 +4,22 @@
 
 Graphics g;
 
-namespace Engine {
+Engine::~Engine() {
+	Physics::cleanUp();
+}
 
-	void init() {
-		g.initialize();
-		Physics::initialize();
-	}
+void Engine::init() {
+	g.initialize();
+	Physics::initialize();
+}
 
-	Transform *addCube() {
-		Transform *cube = g.addCube();
-		cube->setRigidBody(Physics::addOBB());
-		return cube;
-	}
+Transform *Engine::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
+	Transform *cube = g.addCube(pos,scale,rot, dynamic);
+	cube->setRigidBody(Physics::addOBB(pos,scale,rot, dynamic));
+	return cube;
+}
 
-	void update(float delta) {
-		g.update();
-		Physics::update(delta);
-	}
+void Engine::update(float delta) {
+	g.update();
+	Physics::update(delta);
 }

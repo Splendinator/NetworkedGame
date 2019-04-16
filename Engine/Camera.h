@@ -9,11 +9,11 @@ public:
 	Camera();
 	~Camera();
 
-	mat4f buildViewMatrix();
+	Mat4f buildViewMatrix();
 	
 	float yaw = 0.0f;
 	float pitch = 0.0f;
-	vec3f pos = { 0,0,0 };
+	Vec3f pos = { 0,0,0 };
 
 private:
 

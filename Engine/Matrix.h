@@ -23,8 +23,8 @@ private:
 	Vector<T,N> data[N];
 };
 
-typedef Matrix<float, 4> mat4f;
-typedef Matrix<float, 3> mat3f;
+typedef Matrix<float, 4> Mat4f;
+typedef Matrix<float, 3> Mat3f;
 
 
 

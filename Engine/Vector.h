@@ -21,7 +21,7 @@ private:
 };
 
 
-typedef Vector<float, 2> vec2f;
-typedef Vector<float, 3> vec3f;
-typedef Vector<float, 4> vec4f;
+typedef Vector<float, 2> Vec2f;
+typedef Vector<float, 3> Vec3f;
+typedef Vector<float, 4> Vec4f;
 
