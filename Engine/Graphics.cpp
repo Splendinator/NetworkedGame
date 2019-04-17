@@ -7,7 +7,6 @@
 #include <iostream>
 #include "Renderable.h"
 #include "Math.h"
-#include "Camera.h"
 #include "Transform.h"
 
 Camera camera;
@@ -142,6 +141,22 @@ void Graphics::update() {
 	setUpCubes();
 	passView();
 	drawCubes();
+	w.updateInput();
+}
+
+bool Graphics::isHeld(int key)
+{
+	return w.isHeld(key);
+}
+
+bool Graphics::isPressed(int key)
+{
+	return w.isPressed(key);
+}
+
+Camera * Graphics::getCamera()
+{
+	return &camera;
 }
 
 void Graphics::initialize() {

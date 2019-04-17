@@ -19,6 +19,21 @@ Transform *Engine::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
 	return cube;
 }
 
+bool Engine::isHeld(int key)
+{
+	return g.isHeld(key);
+}
+
+bool Engine::isPressed(int key)
+{
+	return g.isPressed(key);
+}
+
+Camera * Engine::getCamera()
+{
+	return g.getCamera();
+}
+
 void Engine::update(float delta) {
 	g.update();
 	Physics::update(delta);

@@ -6,6 +6,11 @@
 
 using namespace std;
 
+static const int NUM_KEYS = 512;
+
+bool l_pressed[NUM_KEYS];
+bool pressed[NUM_KEYS];
+bool held[NUM_KEYS];
 
 
 MSG msg = {};
@@ -76,11 +81,30 @@ void Window::threadInit() {
 
 	ShowWindow(hwnd, 5);
 	initialized = true;
+	
+	ShowCursor(false);
+	
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+}
+
+void Window::updateInput(){
+	memcpy((void *)pressed, (void *)l_pressed, NUM_KEYS);
+	memset((void *)l_pressed, 0, NUM_KEYS);
+	SetCursorPos(500, 500);
+}
+
+bool Window::isHeld(int key)
+{
+	return held[key];
+}
+
+bool Window::isPressed(int key)
+{
+	return pressed[key];
 }
 
 Window::Window()
@@ -105,15 +129,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 #pragma region INPUT/OUTPUT
 	case WM_KEYDOWN:
-
-		switch (wParam) {
-		case VK_ESCAPE:
-			DestroyWindow(hwnd);
-			exit(0);
-			return 0;
+		if (wParam < NUM_KEYS && !(lParam & 0xFF000000)) {
+			l_pressed[wParam] = true;
+			held[wParam] = true;
 		}
-
 		break;
+	case WM_KEYUP:
+		if (wParam < NUM_KEYS) {
+			held[wParam] = false;
+		}
+		break;
+		
 #pragma endregion
 
 

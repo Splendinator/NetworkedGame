@@ -15,6 +15,10 @@ public:
 	float pitch = 0.0f;
 	Vec3f pos = { 0,0,0 };
 
+	Vec3f foward();
+	Vec3f right();
+	Vec3f up();
+
 private:
 
 };

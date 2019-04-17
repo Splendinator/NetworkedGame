@@ -14,8 +14,14 @@ public:
 
 	T &operator[](int n) { return data[n]; }
 	const T &operator[](int n) const { return data[n]; }
+
+	Vector<T, N> operator* (T other);
+	const Vector<T, N> &operator+= (const Vector<T,N> &other);
+	const Vector<T, N> &operator-= (const Vector<T, N> &other);
 	
 	Vector<T, N> operator- () const;
+
+	Vector<T,N> &normalize();
 private:
 	T data[N];
 };

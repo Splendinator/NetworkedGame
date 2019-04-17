@@ -12,6 +12,10 @@ public:
 	HDC getContextDevice() { return contextDevice; }
 	bool isInitialized() { return initialized; }
 	void initialize();
+	void updateInput();
+
+	bool isHeld(int key);
+	bool isPressed(int key);
 
 private:
 	void threadInit();
@@ -21,6 +25,7 @@ private:
 	volatile bool initialized = false;
 	HWND hwnd;
 	HDC contextDevice;
+	
 
 };
 
