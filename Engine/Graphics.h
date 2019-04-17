@@ -18,6 +18,9 @@ public:
 	bool isHeld(int key);
 	bool isPressed(int key);
 
+	int getMouseXDelta();
+	int getMouseYDelta();
+
 	Camera *getCamera();
 
 	

@@ -34,6 +34,11 @@ int main() {
 		{
 			e.getCamera()->pos -= e.getCamera()->up() * 0.01f;
 		}
+		std::cout << e.getMouseXDelta() << '\n';
+		e.getCamera()->yaw += e.getMouseXDelta() / 200.f;
+		e.getCamera()->pitch += e.getMouseYDelta() / 200.f;
+		if (e.getCamera()->pitch > 1.5f) e.getCamera()->pitch = 1.5f;
+		if (e.getCamera()->pitch < -1.5f) e.getCamera()->pitch = -1.5f;
 		e.update(0.001f);
 	}
 

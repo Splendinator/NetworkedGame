@@ -29,6 +29,16 @@ bool Engine::isPressed(int key)
 	return g.isPressed(key);
 }
 
+int Engine::getMouseXDelta()
+{
+	return g.getMouseXDelta();
+}
+
+int Engine::getMouseYDelta()
+{
+	return g.getMouseYDelta();
+}
+
 Camera * Engine::getCamera()
 {
 	return g.getCamera();

@@ -12,6 +12,9 @@ bool l_pressed[NUM_KEYS];
 bool pressed[NUM_KEYS];
 bool held[NUM_KEYS];
 
+int mouseLastPosX = 0, mousePosX = 0, mouseBufferPosX;
+int mouseLastPosY = 0, mousePosY = 0, mouseBufferPosY;
+
 
 MSG msg = {};
 
@@ -82,7 +85,7 @@ void Window::threadInit() {
 	ShowWindow(hwnd, 5);
 	initialized = true;
 	
-	ShowCursor(false);
+	//ShowCursor(false);
 	
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
@@ -94,7 +97,22 @@ void Window::threadInit() {
 void Window::updateInput(){
 	memcpy((void *)pressed, (void *)l_pressed, NUM_KEYS);
 	memset((void *)l_pressed, 0, NUM_KEYS);
-	SetCursorPos(500, 500);
+	//if (lockCursor) {
+		mouseLastPosX = 720;
+		mouseLastPosY = 450;
+	//}
+	//else
+	//{
+	//mouseLastPosX = mousePosX;
+	//mouseLastPosY = mousePosY;
+	//}
+	mousePosX = mouseBufferPosX;
+	mousePosY = mouseBufferPosY;
+	POINT pt;
+	pt.x = 720;
+	pt.y = 450;
+	ClientToScreen(hwnd, &pt);
+	SetCursorPos(pt.x, pt.y);
 }
 
 bool Window::isHeld(int key)
@@ -107,6 +125,13 @@ bool Window::isPressed(int key)
 	return pressed[key];
 }
 
+int Window::getMouseXDelta() {
+	return (mousePosX - mouseLastPosX);
+}
+int Window::getMouseYDelta() {
+	return (mouseLastPosY - mousePosY);
+}
+
 Window::Window()
 {
 
@@ -117,6 +142,11 @@ Window::~Window()
 {
 	
 }
+
+struct MouseMove {
+	short x;
+	short y;
+};
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
@@ -139,7 +169,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 			held[wParam] = false;
 		}
 		break;
-		
+	case WM_MOUSEMOVE:
+		MouseMove *m = (MouseMove *)&lParam;
+		mouseBufferPosX = m->x;
+		mouseBufferPosY = m->y;
+		break;
 #pragma endregion
 
 

@@ -154,6 +154,16 @@ bool Graphics::isPressed(int key)
 	return w.isPressed(key);
 }
 
+int Graphics::getMouseXDelta()
+{
+	return w.getMouseXDelta();
+}
+
+int Graphics::getMouseYDelta()
+{
+	return w.getMouseYDelta();
+}
+
 Camera * Graphics::getCamera()
 {
 	return &camera;
