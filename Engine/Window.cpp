@@ -15,6 +15,8 @@ bool held[NUM_KEYS];
 int mouseLastPosX = 0, mousePosX = 0, mouseBufferPosX;
 int mouseLastPosY = 0, mousePosY = 0, mouseBufferPosY;
 
+void(*onWindowClose)() = nullptr;
+
 
 MSG msg = {};
 
@@ -132,6 +134,11 @@ int Window::getMouseYDelta() {
 	return (mouseLastPosY - mousePosY);
 }
 
+void Window::setOnWindowClose(void(*func)())
+{
+	onWindowClose = func;
+}
+
 Window::Window()
 {
 
@@ -152,7 +159,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 	switch (uMsg) {
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
-		exit(0);
+		if (onWindowClose) { onWindowClose(); }
 		return 0;
 	case WM_DESTROY:
 		return 0;

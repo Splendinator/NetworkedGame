@@ -3,6 +3,8 @@
 in vec3 o_norm;
 in vec3 worldPos;
 
+layout(location = 10) uniform vec3 colour;
+
 out vec4 FragColor;
 
 const vec3 LIGHT_DIR = normalize(vec3(0.2, -0.3, 0.1));
@@ -18,6 +20,6 @@ void main()
 
 	vec3 cameraNorm = worldPos;
 
-    FragColor = vec4(finalLight,0,0,1);
+    FragColor = vec4(finalLight * colour,1);
 	
 } 

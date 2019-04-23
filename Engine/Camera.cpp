@@ -31,7 +31,7 @@ Vec3f Camera::foward()
 
 Vec3f Camera::right()
 {
-	return Vec3f({float(cos(yaw)), 0,float(sin(yaw)) }).normalize();
+	return Vec3f({ float(cos(yaw)), 0,float(sin(yaw)) }).normalize();
 }
 
 Vec3f Camera::up()

@@ -15,6 +15,7 @@ public:
 
 	
 	Matrix<T, N> operator* (const Matrix<T, N> &other) const;
+	Vector<T, N> operator* (const Vector<T, N> &other) const;
 	Matrix<T, N> &operator*= (const Matrix<T, N> &other);
 	
 	Matrix<T, N> &toIdentity();
@@ -65,6 +66,23 @@ inline Matrix<T, N> Matrix<T, N>::operator*(const Matrix<T, N>& other) const
 	}
 
 	return m;
+}
+
+template<class T, int N>
+inline Vector<T, N> Matrix<T, N>::operator*(const Vector<T, N>& other) const
+{
+	Vector<T, N> v;
+
+	for (int i = 0; i < N; ++i) { v[i] = 0; }
+
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < N; ++j) {
+			v[i] += data[i][j] * other[j];
+		}
+	}
+	
+
+	return v;
 }
 
 template<class T, int N>

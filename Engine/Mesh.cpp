@@ -1,5 +1,7 @@
 #include "Mesh.h"
 #include "GL.h"
+#include "Math.h"
+#include "Quaternion.h";
 
 
 
@@ -99,6 +101,151 @@ Mesh * Mesh::genCube()
 	m->normals[33]	= {0.0f,-1.0f,0.0f};
 	m->normals[34]	= {0.0f,-1.0f,0.0f};
 	m->normals[35]	= {0.0f,-1.0f,0.0f};
+
+	return m;
+}
+
+
+#include <iostream>
+const int CAPSULE_NUM_STRIPS = 24;
+const int CAPSULE_SPHERE_ROWS = 12;
+Mesh * Mesh::genCapsule(float height, float rad)
+{
+	Mesh *m = new Mesh;
+
+	m->numVerts = CAPSULE_SPHERE_ROWS * 2 * 6 * CAPSULE_NUM_STRIPS;
+
+	m->verts = new Vec3f[m->numVerts];
+	m->inds = nullptr;
+	m->normals = new Vec3f[m->numVerts];
+
+	//x^2 + y^2 + z^2 = 1
+	
+	float topHeight = height + rad;
+	float angle = 2 * Math::PI / CAPSULE_NUM_STRIPS;
+	Vec4f v1 = {1,0,0,1};
+	Vec4f v2;
+
+	float fullX = Math::PI / float(2 * CAPSULE_SPHERE_ROWS);
+	float fullY = 2 * Math::PI / float(CAPSULE_NUM_STRIPS);
+
+	Mat4f rotateX = Math::buildRotateMatrixY(fullX);
+	Mat4f rotateY = Math::buildRotateMatrixX(fullY);
+	
+	v2 = rotateX * v1;
+
+	//std::cout << v2[0] << " " << v2[1] << " " << v2[2] << '\n';
+
+	//Top of sphere
+	for (int i = 0; i < CAPSULE_NUM_STRIPS; ++i) {
+		m->normals[3 * i] = { v1[0],v1[1],v1[2] };
+		m->verts[3 * i] = { v1[0] + height,v1[1],v1[2] };
+		m->normals[3 * i + 1] = { v2[0],v2[1],v2[2] };
+		m->verts[3 * i + 1] = { v2[0] + +height,v2[1],v2[2] };
+		v2 = rotateY * v2;
+		m->normals[3 * i + 2] = { v2[0],v2[1],v2[2] };
+		m->verts[3 * i + 2] = { v2[0] + +height,v2[1],v2[2] };
+	}
+
+	int offset = 3 * CAPSULE_NUM_STRIPS;
+
+	//Rest of sphere
+	for (int i = 0; i < CAPSULE_SPHERE_ROWS-1; ++i) {
+		v1 = v2;
+		v2 = rotateX * v2;
+		for (int j = 0; j < CAPSULE_NUM_STRIPS; ++j) {
+			m->normals[offset] = { v1[0],v1[1],v1[2] };
+			m->verts[offset++] = { v1[0] + height,v1[1],v1[2] };
+			
+			m->normals[offset] = { v2[0],v2[1],v2[2] };
+			m->verts[offset++] = { v2[0] + height,v2[1],v2[2] };
+
+			v2 = rotateY * v2;				   
+			m->normals[offset] = { v2[0],v2[1],v2[2] };
+			m->verts[offset++] = { v2[0] + height,v2[1],v2[2] };
+											
+			m->normals[offset] = { v1[0],v1[1],v1[2] };
+			m->verts[offset++] = { v1[0] + height,v1[1],v1[2] };
+
+			m->normals[offset] = { v2[0],v2[1],v2[2] };
+			m->verts[offset++] = { v2[0] + height,v2[1],v2[2] };
+			v1 = rotateY * v1;				   
+			m->normals[offset] = { v1[0],v1[1],v1[2] };
+			m->verts[offset++] = { v1[0]+ height,v1[1],v1[2] };
+
+		}
+	}
+	
+	//Capsule Body
+	v1 = v2;
+	v1[0] += height;
+	v2[0] -= height;
+	for (int j = 0; j < CAPSULE_NUM_STRIPS; ++j) {
+		m->normals[offset] = { 0,v1[1],v1[2] };
+		m->verts[offset++] = { v1[0],v1[1],v1[2] };
+
+		m->normals[offset] = { 0,v2[1],v2[2] };
+		m->verts[offset++] = { v2[0],v2[1],v2[2] };
+		v2 = rotateY * v2;
+
+		m->normals[offset] = { 0,v2[1],v2[2] };
+		m->verts[offset++] = { v2[0],v2[1],v2[2] };
+
+		m->normals[offset] = { 0,v1[1],v1[2] };
+		m->verts[offset++] = { v1[0],v1[1],v1[2] };
+
+		m->normals[offset] = { 0,v2[1],v2[2] };
+		m->verts[offset++] = { v2[0],v2[1],v2[2] };
+		v1 = rotateY * v1;
+		m->normals[offset] = { 0,v1[1],v1[2] };
+		m->verts[offset++] = { v1[0],v1[1],v1[2] };
+	}
+
+	v1 = { -1,0,0,1 };
+	v2 = rotateX * v1;
+
+	//Top of sphere
+	for (int i = 0; i < CAPSULE_NUM_STRIPS; ++i) {
+		m->normals[offset] = { v1[0],v1[1],v1[2] };
+		m->verts[offset++] = { v1[0] - height,v1[1],v1[2] };
+		m->normals[offset] = { v2[0],v2[1],v2[2] };
+		m->verts[offset++] = { v2[0] - height,v2[1],v2[2] };
+		v2 = rotateY * v2;
+		m->normals[offset] = { v2[0],v2[1],v2[2] };
+		m->verts[offset++] = { v2[0] - height,v2[1],v2[2] };
+	}
+
+	//Rest of sphere
+	for (int i = 0; i < CAPSULE_SPHERE_ROWS - 1; ++i) {
+		v1 = v2;
+		v2 = rotateX * v2;
+		for (int j = 0; j < CAPSULE_NUM_STRIPS; ++j) {
+			m->normals[offset] = { v1[0],v1[1],v1[2] };
+			m->verts[offset++] = { v1[0] - height,v1[1],v1[2] };
+
+			m->normals[offset] = { v2[0],v2[1],v2[2] };
+			m->verts[offset++] = { v2[0] - height,v2[1],v2[2] };
+
+			v2 = rotateY * v2;
+			m->normals[offset] = { v2[0],v2[1],v2[2] };
+			m->verts[offset++] = { v2[0] - height,v2[1],v2[2] };
+
+			m->normals[offset] = { v1[0],v1[1],v1[2] };
+			m->verts[offset++] = { v1[0] - height,v1[1],v1[2] };
+
+			m->normals[offset] = { v2[0],v2[1],v2[2] };
+			m->verts[offset++] = { v2[0] - height,v2[1],v2[2] };
+			v1 = rotateY * v1;
+			m->normals[offset] = { v1[0],v1[1],v1[2] };
+			m->verts[offset++] = { v1[0] - height,v1[1],v1[2] };
+
+		}
+	}
+
+
+
+
+
 
 	return m;
 }

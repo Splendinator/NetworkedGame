@@ -54,7 +54,7 @@ Vector<T,N> &Vector<T, N>::normalize()
 {
 	T total = 0;
 	for (int i = 0; i < N; ++i) {
-		total += data[i];
+		total += abs(data[i]);
 	}
 	for (int i = 0; i < N; ++i) {
 		data[i] /= total;

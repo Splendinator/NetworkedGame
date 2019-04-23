@@ -13,6 +13,7 @@ public:
 
 	void initialize();
 	Transform *addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic);
+	Transform *addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic);
 	void update();
 
 	bool isHeld(int key);
@@ -20,6 +21,8 @@ public:
 
 	int getMouseXDelta();
 	int getMouseYDelta();
+
+	void setOnWindowClose(void (*func)());
 
 	Camera *getCamera();
 

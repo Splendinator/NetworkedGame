@@ -57,8 +57,9 @@ namespace Physics {
 
 	void cleanUp()
 	{
-		gFoundation->release();
+
 		gPhysics->release();
+		gFoundation->release();
 	}
 	
 	PxRigidActor *addOBB(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
@@ -70,6 +71,29 @@ namespace Physics {
 		localTm.q.y = rot.y;
 		localTm.q.z = rot.z;
 		localTm.q.w = rot.w;
+		PxRigidActor *body;
+		if (dynamic) {
+			body = gPhysics->createRigidDynamic(localTm);
+			PxRigidBodyExt::updateMassAndInertia(*(PxRigidDynamic *)body, 10.0f);
+		}
+		else {
+			body = gPhysics->createRigidStatic(localTm);
+		}
+		body->attachShape(*shape);
+		gScene->addActor(*body);
+		return body;
+	}
+
+	PxRigidActor *addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
+
+		PxShape* shape = gPhysics->createShape(PxCapsuleGeometry(1,1), *gMaterial);
+
+		PxTransform localTm(PxVec3(pos[0], pos[1], pos[2])); 
+		localTm.q.x = rot.x;
+		localTm.q.y = rot.y;
+		localTm.q.z = rot.z;
+		localTm.q.w = rot.w;
+
 		PxRigidActor *body;
 		if (dynamic) {
 			body = gPhysics->createRigidDynamic(localTm);

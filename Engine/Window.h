@@ -19,8 +19,12 @@ public:
 	int getMouseXDelta();
 	int getMouseYDelta();
 
+	void setOnWindowClose(void(*func)());
+
 private:
 	void threadInit();
+
+	
 
 
 	std::thread listenThread;

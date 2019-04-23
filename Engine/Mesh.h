@@ -8,6 +8,7 @@ public:
 	~Mesh();
 
 	static Mesh *genCube();
+	static Mesh *genCapsule(float height = 1.f, float rad = 1.f);
 
 	void bufferMesh();
 
