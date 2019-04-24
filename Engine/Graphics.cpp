@@ -267,7 +267,7 @@ void Graphics::initialize() {
 
 Transform *Graphics::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic)
 {
-	Transform *p = new Transform();
+	Transform *p = new Transform(dynamic);
 	p->_pos = pos;
 	p->_scale = scale;
 	p->_rot = rot;
@@ -277,13 +277,14 @@ Transform *Graphics::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic)
 
 Transform * Graphics::addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic)
 {
-	Transform *p = new Transform();
+	Transform *p = new Transform(dynamic);
 	p->_pos = pos;
 	p->_scale = scale;
 	p->_rot = rot;
 	capsules.push_back(p);
 	return p;
 }
+
 
 
 

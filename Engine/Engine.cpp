@@ -1,11 +1,19 @@
 #include "Engine.h"
 #include "Graphics.h"
 #include "Physics.h"
+#include <vector>
 
 Graphics g;
+std::vector<Transform *> noDraw;
 
 void cleanUp() {
 	//exit(0);
+}
+
+void updateTransforms() {
+	for (Transform *t : noDraw) {
+		t->update();
+	}
 }
 
 Engine::~Engine() {
@@ -18,15 +26,24 @@ void Engine::init() {
 	g.setOnWindowClose(cleanUp);
 }
 
-Transform *Engine::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
+Transform *Engine::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, bool draw) {
 	Transform *cube = g.addCube(pos,scale,rot, dynamic);
 	cube->setRigidBody(Physics::addOBB(pos,scale,rot, dynamic));
 	return cube;
 }
 
-Transform * Engine::addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic)
+
+
+Transform * Engine::addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, bool draw)
 {
-	Transform *capsule = g.addCapsule(pos, scale, rot, dynamic);
+	Transform *capsule;
+	if (draw) {
+		capsule = g.addCapsule(pos, scale, rot, dynamic);
+	}
+	else {
+		capsule = new Transform(dynamic);
+		noDraw.push_back(capsule);
+	}
 	capsule->setRigidBody(Physics::addCapsule(pos, scale, rot, dynamic));
 	return capsule;
 }
@@ -57,6 +74,8 @@ Camera * Engine::getCamera()
 }
 
 void Engine::update(float delta) {
+	updateTransforms();
 	g.update();
 	Physics::update(delta);
+	
 }
