@@ -13,7 +13,7 @@ namespace domnet {
 	class WinClient : public BaseClient, public WinHost
 	{
 	public:
-		WinClient(uint16_t portNumber) : WinHost(portNumber) {};
+		WinClient(uint16_t portNumber = DEFAULT_PORT_SERV) : WinHost(portNumber) {};
 		~WinClient();
 
 		int connect(const Address &a);

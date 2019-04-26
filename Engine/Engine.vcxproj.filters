@@ -45,9 +45,6 @@
     <ClCompile Include="Math.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GL.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>

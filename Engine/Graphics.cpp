@@ -50,7 +50,7 @@ void initShaders() {
 	shaderFragment = glCreateShader(GL_FRAGMENT_SHADER);
 	
 	//Vertex Shader
-	IO::fReadInto(buf, "BasicVert.glsl");
+	IO::fReadInto(buf, "../shaders/BasicVert.glsl");
 	glShaderSource(shaderVertex, 1, &bufP, NULL);
 	glCompileShader(shaderVertex);
 	glGetShaderiv(shaderVertex, GL_COMPILE_STATUS, &status);
@@ -62,7 +62,7 @@ void initShaders() {
 	glAttachShader(programID, shaderVertex);
 
 	//Fragment Shader
-	IO::fReadInto(buf, "BasicFrag.glsl");
+	IO::fReadInto(buf, "../shaders/BasicFrag.glsl");
 	glShaderSource(shaderFragment, 1, &bufP, NULL);
 	glCompileShader(shaderFragment);
 	glGetShaderiv(shaderFragment, GL_COMPILE_STATUS, &status);

@@ -21,7 +21,8 @@ namespace domnet {
 		//Message type (CONNECT,DISCONNECT,...)
 		short type;
 
-		short id;	//These values likely not needed and can be derrived.
+		//ID of the sender (used by server - UDP)
+		short id;	
 
 	protected:
 		//sizeof(message), *** TAKE CARE WHEN MANUALLY CHANGING ***

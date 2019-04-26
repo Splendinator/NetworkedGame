@@ -86,7 +86,9 @@ namespace Physics {
 
 	PxRigidActor *addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
 
-		PxShape* shape = gPhysics->createShape(PxCapsuleGeometry(1,1), *gMaterial);
+		static PxMaterial *playerMaterial = gPhysics->createMaterial(1.0f, 1.0f, 0.f);
+
+		PxShape* shape = gPhysics->createShape(PxCapsuleGeometry(1,1), *playerMaterial);
 
 		PxTransform localTm(PxVec3(pos[0], pos[1], pos[2])); 
 		localTm.q.x = rot.x;
