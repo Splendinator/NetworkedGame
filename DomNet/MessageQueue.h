@@ -31,7 +31,6 @@ namespace domnet {
 		
 
 			while (j <= size) {
-				std::cout << "HERE\n";
 				//printf("Adding a single message of length %d.\n", m->size);
 
 				addMessage(m);

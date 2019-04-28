@@ -4,7 +4,9 @@
 
 ManagerServer::ManagerServer()
 {
-	_server = new domnet::Server;
+
+	domnet::initialize();
+	_server = new domnet::Server();
 }
 
 
@@ -20,7 +22,17 @@ void ManagerServer::addListener(unsigned int messageType, std::function<void(dom
 
 void ManagerServer::host(unsigned int players)
 {
+	_server->host(players);
 }
+
+void ManagerServer::send(domnet::BaseMessage *m, unsigned int player, bool useTCP) {
+	_server->sendMessage(m, player, (useTCP?domnet::DN_TCP:domnet::DN_UDP));
+}
+
+void ManagerServer::broadcast(domnet::BaseMessage *m, bool useTCP) {
+	_server->broadcast(m, (useTCP ? domnet::DN_TCP : domnet::DN_UDP));
+}
+
 
 void ManagerServer::update()
 {

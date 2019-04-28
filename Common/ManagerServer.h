@@ -16,6 +16,8 @@ public:
 
 	void host(unsigned int players);
 	void update();
+	void send(domnet::BaseMessage *m, unsigned int player, bool useTCP = true);
+	void broadcast(domnet::BaseMessage *m, bool useTCP = true);
 
 private:
 	domnet::Server *_server;

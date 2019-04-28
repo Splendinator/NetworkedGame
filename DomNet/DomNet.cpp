@@ -4,9 +4,11 @@
 #include <WinSock2.h>
 #include <ws2tcpip.h>
 
+bool isInitialized = false;
 
 int domnet::initialize() {
 
+	if (isInitialized) return ERR_OK;
 
 	WSADATA wsaData;
 
@@ -14,5 +16,6 @@ int domnet::initialize() {
 		return ERR_INITIALIZE;
 	}
 
+	isInitialized = true;
 	return ERR_OK;
 }

@@ -202,8 +202,6 @@ int domnet::WinClient::listenFuncUDP()
 			continue;
 		}
 
-		std::cout << err << std::endl;
-
 		messageQueueUDP.addMessagesToQueue((useBufOneUDP ? bufOneUDP : bufTwoUDP), err);
 
 		useBufOneUDP = !useBufOneUDP;

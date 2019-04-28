@@ -99,22 +99,26 @@ void Window::threadInit() {
 void Window::updateInput(){
 	memcpy((void *)pressed, (void *)l_pressed, NUM_KEYS);
 	memset((void *)l_pressed, 0, NUM_KEYS);
-	//if (lockCursor) {
+	
+	if (GetForegroundWindow() == hwnd) {
+		//if(lockWindow){
 		mouseLastPosX = 720;
 		mouseLastPosY = 450;
-	//}
-	//else
-	//{
-	//mouseLastPosX = mousePosX;
-	//mouseLastPosY = mousePosY;
-	//}
-	mousePosX = mouseBufferPosX;
-	mousePosY = mouseBufferPosY;
-	POINT pt;
-	pt.x = 720;
-	pt.y = 450;
-	ClientToScreen(hwnd, &pt);
-	SetCursorPos(pt.x, pt.y);
+		//}
+		//else
+		//{
+		//mouseLastPosX = mousePosX;
+		//mouseLastPosY = mousePosY;
+		//}
+		mousePosX = mouseBufferPosX;
+		mousePosY = mouseBufferPosY;
+
+		POINT pt;
+		pt.x = 720;
+		pt.y = 450;
+		ClientToScreen(hwnd, &pt);
+		SetCursorPos(pt.x, pt.y);
+	}
 }
 
 bool Window::isHeld(int key)

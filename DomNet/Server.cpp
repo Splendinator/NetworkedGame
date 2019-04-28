@@ -169,7 +169,7 @@ int domnet::Server::broadcast(BaseMessage *m, char protocal)
 	case(DN_UDP):
 		for (int i = 0; i < SERVER_MAX_CLIENTS; ++i) {
 			if (clients[i] != INVALID_SOCKET) {
-				std::cout << "Sending..." << std::endl;
+				
 		
 				s.sin_port = htons(DEFAULT_PORT_CLIENT + i);
 				err = sendto(SendingSocketUDP, (char *)m, m->getSize(), 0, (sockaddr *)&s, sizeof(s));
@@ -277,7 +277,6 @@ int domnet::Server::listenFuncUDP()
 			continue;
 		}
 
-		std::cout << err << std::endl;
 
 		messageQueueUDP.addMessagesToQueue((useBufOneUDP ? bufOneUDP : bufTwoUDP), err);
 

@@ -17,6 +17,7 @@ public:
 
 	void connect(domnet::Address a);
 	void update();
+	void send(domnet::BaseMessage *m, bool useTCP = true);
 
 private:
 	//domnet::Client *_client;

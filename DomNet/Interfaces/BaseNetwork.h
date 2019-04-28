@@ -24,7 +24,7 @@ namespace domnet {
 
 	//port is automatically set to DEFAULT_PORT
 	struct Address {
-		char *hostname;
+		const char *hostname;
 		unsigned short port = DEFAULT_PORT_SERV;
 	};
 	
