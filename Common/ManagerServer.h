@@ -19,6 +19,9 @@ public:
 	void send(domnet::BaseMessage *m, unsigned int player, bool useTCP = true);
 	void broadcast(domnet::BaseMessage *m, bool useTCP = true);
 
+	int getNumPlayers() { return _numPlayers; }
+
+
 private:
 	domnet::Server *_server;
 	std::map<unsigned int, std::function<void(domnet::BaseMessage *, int)>> _listeners;

@@ -88,13 +88,14 @@ void engineLoop() {
 
 int main() {
 
-	manager.addListener(Messages::MT_PLAYER_POSITION, [&](BaseMessage *m) {
+	manager.addListener(Messages::MT_LOAD_LEVEL_PLAYER, [&](BaseMessage *m) {
 		std::cout << "UDP Packet Recieved\n";
-		manager.send(&Messages::m_PlayerPosition(), false);
+		manager.send(&Messages::messageRef<Messages::PayloadPlayerPosition>());
 	});
 
 	networkSetup();
 	engineSetup();
+
 
 	for (;;) {
 		manager.update();

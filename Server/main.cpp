@@ -4,6 +4,7 @@
 #include "../Engine/Math.h" 
 #include "ManagerServer.h"
 #include "Messages.h"
+#include "Level.h"
 
 
 
@@ -86,14 +87,16 @@ void engineLoop() {
 
 int main() {
 
-	manager.addListener(Messages::MT_PLAYER_POSITION, [&](BaseMessage *m, int player) {
+	manager.addListener(Messages::MT_LOAD_LEVEL_PLAYER, [&](BaseMessage *m, int player) {
 		std::cout << "UDP Packet Recieved\n";
-		manager.broadcast(&Messages::m_PlayerPosition(), false);
+		manager.broadcast(&Messages::messageRef<Messages::PayloadPlayerPosition>(), true);
 	});
 
 	networkSetup();
 
-	manager.send(&Messages::m_PlayerPosition(), 0, false);
+	//Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+
+	manager.send(&Messages::messageRef<Messages::PayloadPlayerPosition>(), 0);
 
 	engineSetup();
 	

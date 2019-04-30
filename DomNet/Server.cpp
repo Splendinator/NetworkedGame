@@ -229,7 +229,6 @@ BaseMessage * domnet::Server::getMessageUDP(unsigned char &index)
 
 void domnet::Server::listenFunc(unsigned char index)
 {
-
 	
 	int err;
 	char *buf = (useBufOne[index] ? bufOne : bufTwo) + BUF_SIZE * index;
@@ -238,7 +237,6 @@ void domnet::Server::listenFunc(unsigned char index)
 		
 		
 		err = recv(clients[index], buf, BUF_SIZE, 0);
-		
 
 		if (err == SOCKET_ERROR) {
 			printf("Server listenFunc error: %d - %d\n",index, WSAGetLastError());
