@@ -88,13 +88,14 @@ void engineLoop() {
 
 int main() {
 
-	manager.addListener(Messages::MT_LOAD_LEVEL_PLAYER, [&](BaseMessage *m) {
-		std::cout << "UDP Packet Recieved\n";
-		manager.send(&Messages::messageRef<Messages::PayloadPlayerPosition>());
+	manager.addListener(Messages::MT_LOAD_LEVEL_CUBE, [&](BaseMessage *m) {
+		auto p = (domnet::Message<Messages::PayloadLoadLevelCube> *)m;
+		std::cout << "Adding Cube...";
+		e.addCube(p->payload.pos, p->payload.scale, p->payload.rot, p->payload.dynamic, p->payload.visible);
 	});
 
-	networkSetup();
 	engineSetup();
+	networkSetup();
 
 
 	for (;;) {

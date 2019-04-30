@@ -8,6 +8,7 @@
 #include "Renderable.h"
 #include "Math.h"
 #include "Transform.h"
+#include <vector>
 
 Camera camera;
 

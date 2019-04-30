@@ -64,6 +64,8 @@ namespace Physics {
 	
 	PxRigidActor *addOBB(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic) {
 
+		std::cout << scale[0] << " " << scale[1] << " " << scale[2] << '\n';
+
 		PxShape* shape = gPhysics->createShape(PxBoxGeometry(scale[0], scale[1], scale[2]), *gMaterial);
 
 		PxTransform localTm(PxVec3(pos[0], pos[1], pos[2]));

@@ -8,6 +8,8 @@
 
 
 
+
+
 using namespace domnet;
 
 Engine e;
@@ -26,16 +28,17 @@ void networkSetup() {
 void engineSetup() {
 
 	e.init();
-
-	e.addCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	e.addCube({ -0.5,7,0.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	e.addCube({ 4.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	e.addCube({ -2.5,3,5.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	e.addCube({ 6.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	e.addCube({ -4.5,2,-2.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-
-	e.addCube({ 0,-3,0 }, { 48,1,48 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f), false);
-
+	Level::init(&e, &manager);
+	Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//e.addCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//e.addCube({ -0.5,7,0.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//e.addCube({ 4.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//e.addCube({ -2.5,3,5.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//e.addCube({ 6.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//e.addCube({ -4.5,2,-2.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	//
+	//e.addCube({ 0,-3,0 }, { 48,1,48 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f), false);
+	//
 	player = e.addCapsule({ 0,10,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, true);
 	player->getRigidBody()->setMass(200000.f);
 	player->getRigidBody()->setLinearDamping(0.5f);
@@ -87,17 +90,9 @@ void engineLoop() {
 
 int main() {
 
-	manager.addListener(Messages::MT_LOAD_LEVEL_PLAYER, [&](BaseMessage *m, int player) {
-		std::cout << "UDP Packet Recieved\n";
-		manager.broadcast(&Messages::messageRef<Messages::PayloadPlayerPosition>(), true);
-	});
+
 
 	networkSetup();
-
-	//Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-
-	manager.send(&Messages::messageRef<Messages::PayloadPlayerPosition>(), 0);
-
 	engineSetup();
 	
 

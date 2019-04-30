@@ -23,20 +23,22 @@ namespace Level {
 	}
 
 	void loadCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, bool visible) {
-		dynamicTransform[dynamicIndex++] = e->addCube(pos, scale, rot, dynamic, visible);
+		dynamicTransform[dynamicIndex] = e->addCube(pos, scale, rot, dynamic, visible);
 
 		auto m = Messages::messageRef<Messages::PayloadLoadLevelCube>();
 
-		//std::cout << m.payload << '\n';
+		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.cubeId = dynamicIndex++;
+		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.pos = pos;
+		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.scale = scale;
+		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.rot = rot;
+		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.dynamic = dynamic;
+		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.visible = visible;
 
-		//auto m = &Messages::m_LoadLevelCube().payload;
-		//m->pos = pos;
-		//m->scale = scale;
-		//m->rot = rot;
-		//m->dynamic = dynamic;
-		//m->visible = visible;
-		//
-		//s->broadcast(&Messages::m_LoadLevelCube());
+		std::cout << Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.scale[0] << '\n';
+		//std::cout << scale[0] << '\n';
+
+		s->broadcast(&Messages::messageRef<Messages::PayloadLoadLevelCube>());
+		
 	}
 
 	void loadPlayer(int playerId, Vec3f pos)

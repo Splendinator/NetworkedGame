@@ -30,7 +30,7 @@ void ManagerServer::send(domnet::BaseMessage *m, unsigned int player, bool useTC
 	_server->sendMessage(m, player, (useTCP?domnet::DN_TCP:domnet::DN_UDP));
 }
 
-void ManagerServer::broadcast(domnet::BaseMessage *m, bool useTCP) {
+void ManagerServer::broadcast(domnet::BaseMessage *m, bool useTCP) {;
 	_server->broadcast(m, (useTCP ? domnet::DN_TCP : domnet::DN_UDP));
 }
 

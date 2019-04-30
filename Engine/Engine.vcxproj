@@ -39,7 +39,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -109,8 +109,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../include/PhysX</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../include/PhysX;../include/GLEW</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);NDEBUG;WIN32_LEAN_AND_MEAN</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>../lib/PhysX;</AdditionalLibraryDirectories>
