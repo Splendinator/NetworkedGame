@@ -30,18 +30,22 @@ void engineSetup() {
 	e.init();
 	Level::init(&e, &manager);
 	Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//e.addCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//e.addCube({ -0.5,7,0.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//e.addCube({ 4.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//e.addCube({ -2.5,3,5.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//e.addCube({ 6.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//e.addCube({ -4.5,2,-2.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
-	//
-	//e.addCube({ 0,-3,0 }, { 48,1,48 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f), false);
-	//
-	player = e.addCapsule({ 0,10,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, true);
-	player->getRigidBody()->setMass(200000.f);
-	player->getRigidBody()->setLinearDamping(0.5f);
+	Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	Level::loadCube({ -0.5,7,0.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	Level::loadCube({ 4.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	Level::loadCube({ -2.5,3,5.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	Level::loadCube({ 6.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	Level::loadCube({ -4.5,2,-2.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
+	
+	Level::loadCube({ 0,-3,0 }, { 48,1,48 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f), false);
+	
+	for (int i = 0; i < NUM_PLAYERS; ++i) {
+		Level::loadPlayer(i, { float(5*i),15,0 });
+	}
+
+	//player = e.addCapsule({ 0,10,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, true);
+	//player->getRigidBody()->setMass(200000.f);
+	//player->getRigidBody()->setLinearDamping(0.5f);
 	
 
 }
@@ -81,11 +85,11 @@ void engineLoop() {
 	e.update(0.004f);
 
 
-	//Player Rotation
-	Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);
-	physx::PxTransform transform = player->getRigidActor()->getGlobalPose();
-	transform.q = { upright.x,upright.y,upright.z,upright.w };
-	player->getRigidBody()->setGlobalPose(transform);
+	////Player Rotation
+	//Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);
+	//physx::PxTransform transform = player->getRigidActor()->getGlobalPose();
+	//transform.q = { upright.x,upright.y,upright.z,upright.w };
+	//player->getRigidBody()->setGlobalPose(transform);
 }
 
 int main() {

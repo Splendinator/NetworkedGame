@@ -107,8 +107,8 @@ Mesh * Mesh::genCube()
 
 
 #include <iostream>
-const int CAPSULE_NUM_STRIPS = 24;
-const int CAPSULE_SPHERE_ROWS = 12;
+const int CAPSULE_NUM_STRIPS = 16;
+const int CAPSULE_SPHERE_ROWS = 8;
 Mesh * Mesh::genCapsule(float height, float rad)
 {
 	Mesh *m = new Mesh;

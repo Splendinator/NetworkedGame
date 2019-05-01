@@ -3,13 +3,14 @@
 #include <type_traits>
 
 
-namespace Messages {
+namespace messages {
 
 	enum MessageType {
 		MT_PLAYER_POSITION,
 		MT_LOAD_LEVEL_CUBE,
 		MT_LOAD_LEVEL_PLAYER,
 		MT_LOAD_LEVEL_OTHER,
+		MT_KEY_PRESS
 	};
 
 	//PlayerPosition
@@ -40,6 +41,9 @@ namespace Messages {
 		Vec3f pos;
 	};
 
+	struct PayloadKeyPress {
+		char input;
+	};
 
 
 	template <typename T>
@@ -55,6 +59,9 @@ namespace Messages {
 		}
 		else if constexpr (std::is_same<T, PayloadLoadLevelOther>::value) {
 			return MT_LOAD_LEVEL_OTHER;
+		}
+		else if constexpr (std::is_same<T, PayloadKeyPress>::value) {
+			return MT_KEY_PRESS;
 		}
 		else {
 			static_assert(false,"Add message type above!");

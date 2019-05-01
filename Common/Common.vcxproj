@@ -129,12 +129,14 @@
     <ClInclude Include="ManagerClient.h" />
     <ClInclude Include="ManagerServer.h" />
     <ClInclude Include="Messages.h" />
+    <ClInclude Include="Shared.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ManagerBase.cpp" />
     <ClCompile Include="ManagerClient.cpp" />
     <ClCompile Include="ManagerServer.cpp" />
     <ClCompile Include="Messages.cpp" />
+    <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

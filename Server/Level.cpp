@@ -2,6 +2,8 @@
 #include "../Engine/Engine.h"
 #include "ManagerServer.h"
 #include "Messages.h"
+#include "../Engine/Math.h"
+#include "Shared.h"
 
 #include <iostream>
 
@@ -9,11 +11,6 @@ Engine *e;
 ManagerServer *s;
 
 int dynamicIndex = 0;
-Transform *dynamicTransform[1024];
-
-int playerIndex = 0;
-Transform *playerTransform[16];
-
 
 namespace Level {
 
@@ -23,39 +20,52 @@ namespace Level {
 	}
 
 	void loadCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, bool visible) {
-		dynamicTransform[dynamicIndex] = e->addCube(pos, scale, rot, dynamic, visible);
+		shared::setDynamic(e->addCube(pos, scale, rot, dynamic, visible), dynamicIndex);
 
-		auto m = Messages::messageRef<Messages::PayloadLoadLevelCube>();
+		auto &m = messages::messageRef<messages::PayloadLoadLevelCube>().payload;
 
-		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.cubeId = dynamicIndex++;
-		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.pos = pos;
-		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.scale = scale;
-		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.rot = rot;
-		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.dynamic = dynamic;
-		Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.visible = visible;
+		m.cubeId = dynamicIndex++;
+		m.pos = pos;
+		m.scale = scale;
+		m.rot = rot;
+		m.dynamic = dynamic;
+		m.visible = visible;
 
-		std::cout << Messages::messageRef<Messages::PayloadLoadLevelCube>().payload.scale[0] << '\n';
-		//std::cout << scale[0] << '\n';
-
-		s->broadcast(&Messages::messageRef<Messages::PayloadLoadLevelCube>());
+		s->broadcast(&messages::messageRef<messages::PayloadLoadLevelCube>());
 		
 	}
 
 	void loadPlayer(int playerId, Vec3f pos)
 	{
-		
-		
-		//auto p = &Messages::m_LoadLevelPlayer().payload;
-		//auto o = &Messages::m_LoadLevelOther().payload;
-		//
-		//p->pos = pos;
-		//
-		//o->
-		//
-		//for (int i = 0; i < s->getNumPlayers(); ++i) {
-		//
-		//}
+		shared::setPlayer(e->addCapsule(pos, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, true), playerId);
+		shared::getPlayer(playerId)->getRigidBody()->setMass(200000.f);
+		shared::getPlayer(playerId)->getRigidBody()->setLinearDamping(0.5f);
+
+		//Player
+		messages::messageRef<messages::PayloadLoadLevelPlayer>().payload.pos = pos;
+
+		//OtherPlayer
+		messages::messageRef<messages::PayloadLoadLevelOther>().payload.playerId = playerId;
+		messages::messageRef<messages::PayloadLoadLevelOther>().payload.pos = pos;
+
+		for (int i = 0; i < s->getNumPlayers(); ++i) {
+			if (i == playerId)
+				s->send(&messages::messageRef<messages::PayloadLoadLevelPlayer>(), i, true);
+			else {
+				s->send(&messages::messageRef<messages::PayloadLoadLevelOther>(), i, true);
+			}
+		}
 	}
+
+	//Transform * getPlayer(int id)
+	//{
+	//	return playerTransform[id];
+	//}
+	//
+	//Transform * getDynamic(int id)
+	//{
+	//	return dynamicTransform[id];
+	//}
 
 
 }
