@@ -12,7 +12,7 @@ namespace domnet {
 		}
 
 
-		void setSize(unsigned int x) { size = x + sizeof(BaseMessage); }
+		void setPayloadSize(unsigned int x) { size = x + sizeof(BaseMessage); }
 		unsigned int getSize() const { return size; }
 		
 

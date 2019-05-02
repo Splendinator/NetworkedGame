@@ -1,13 +1,18 @@
 #include "Shared.h"
-
+#include "../Engine/Quaternion.h"
+#include "../Engine/Math.h"
+#include "../Engine/Transform.h"
 
 using namespace shared;
 
 namespace shared {
 
-	Transform *players[32];
+	const int NUM_PLAYERS = 32;
+	const int NUM_OBJECTS = 2048;
 
-	Transform *dynamicObjects[2048];
+	Transform *players[NUM_PLAYERS] = {};
+
+	Transform *dynamicObjects[NUM_OBJECTS] = {};
 
 	Transform *player = nullptr;
 
@@ -41,4 +46,23 @@ Transform * shared::getCurrPlayer()
 void shared::setCurrPlayer(Transform * t)
 {
 	player = t;
+}
+
+void shared::setPlayersUpright()
+{
+	Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);
+	
+	for (int i = 0; i < NUM_PLAYERS; ++i) {
+		if (players[i]) {
+			physx::PxTransform transform = players[i]->getRigidActor()->getGlobalPose();
+			transform.q = { upright.x,upright.y,upright.z,upright.w };
+			players[i]->getRigidBody()->setGlobalPose(transform);
+		}
+	}
+	
+	if (player) {
+		physx::PxTransform transform = player->getRigidActor()->getGlobalPose();
+		transform.q = { upright.x,upright.y,upright.z,upright.w };
+		player->getRigidBody()->setGlobalPose(transform);
+	}
 }

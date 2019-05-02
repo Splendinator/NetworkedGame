@@ -10,4 +10,6 @@ namespace shared {
 
 	Transform *getCurrPlayer();
 	void setCurrPlayer(Transform *t);
+
+	void setPlayersUpright();
 }

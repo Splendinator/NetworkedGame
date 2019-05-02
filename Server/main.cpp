@@ -5,6 +5,7 @@
 #include "ManagerServer.h"
 #include "Messages.h"
 #include "Level.h"
+#include "Shared.h"
 
 
 
@@ -18,9 +19,49 @@ ManagerServer manager;
 
 static const int NUM_PLAYERS = 1;
 
+static const float PLAYER_MOVE_SPEED = 0.05f;
+
 
 void networkSetup() {
 	
+	manager.addListener(messages::MT_KEY_PRESS, [&](BaseMessage *bm, int i) {
+		auto  m = (Message<messages::PayloadKeyPress> *)bm;
+		auto p = shared::getPlayer(i);
+
+		Camera c;
+		c.yaw = m->payload.rot;
+		c.pitch = 0;
+		
+		Vec3f v;
+		if (m->payload.input & 0b1   ) { // D
+			v = c.right() * PLAYER_MOVE_SPEED;
+			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			pose.p += {v[0], v[1], v[2]};
+			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+		}
+		if (m->payload.input & 0b10  ) { // A
+			v = -c.right() * PLAYER_MOVE_SPEED;
+			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			pose.p += {v[0], v[1], v[2]};
+			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+		}
+		if (m->payload.input & 0b100 ) { // W
+			v = c.foward() * PLAYER_MOVE_SPEED;
+			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			pose.p += {v[0], v[1], v[2]};
+			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+		}
+		if (m->payload.input & 0b1000) { // S
+			v = -c.foward() * PLAYER_MOVE_SPEED;
+			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			pose.p += {v[0], v[1], v[2]};
+			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+		}
+
+
+
+	});
+
 	manager.host(NUM_PLAYERS);
 
 }
@@ -52,6 +93,7 @@ void engineSetup() {
 
 void engineLoop() {
 
+
 	if (e.isHeld('D'))
 	{
 		e.getCamera()->pos += e.getCamera()->right() * 0.02f;
@@ -82,14 +124,27 @@ void engineLoop() {
 	e.getCamera()->pitch += e.getMouseYDelta() / 200.f;
 	if (e.getCamera()->pitch > 1.5f) e.getCamera()->pitch = 1.5f;
 	if (e.getCamera()->pitch < -1.5f) e.getCamera()->pitch = -1.5f;
+	
+	shared::setPlayersUpright();
+
 	e.update(0.004f);
 
+	for (int i = 0; i < NUM_PLAYERS; ++i) {
+		messages::messageRef<messages::PayloadPlayerPosition>().payload.pos = shared::getPlayer(i)->_pos;
+		messages::messageRef<messages::PayloadOtherPlayerPosition>().payload.pos = shared::getPlayer(i)->_pos;
+		messages::messageRef<messages::PayloadOtherPlayerPosition>().payload.id = i;
 
-	////Player Rotation
-	//Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);
-	//physx::PxTransform transform = player->getRigidActor()->getGlobalPose();
-	//transform.q = { upright.x,upright.y,upright.z,upright.w };
-	//player->getRigidBody()->setGlobalPose(transform);
+		for (int j = 0; j < NUM_PLAYERS; ++j) {
+			
+			if(i == j) { 	
+				manager.send(&messages::messageRef<messages::PayloadPlayerPosition>(),j);
+			}
+			else{
+				manager.send(&messages::messageRef<messages::PayloadOtherPlayerPosition>(), j);
+			}
+		}
+	}
+
 }
 
 int main() {

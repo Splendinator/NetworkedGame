@@ -32,3 +32,10 @@ void Transform::update()
 	_rot.w = _rigidbody->getGlobalPose().q.w;
 
 }
+
+void Transform::setPos(Vec3f pos) {
+	_pos = pos;
+	auto pose = getRigidBody()->getGlobalPose();
+	pose.p = { pos[0],pos[1],pos[2] };
+	getRigidBody()->setGlobalPose(pose);
+}

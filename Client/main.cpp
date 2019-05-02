@@ -32,7 +32,6 @@ void engineSetup() {
 }
 
 void initListeners() {
-	manager.addListener(0, [&](BaseMessage *m) {std::cout << "WANKER\n";});
 
 	manager.addListener(messages::MT_LOAD_LEVEL_CUBE, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadLoadLevelCube> *)m;
@@ -52,46 +51,62 @@ void initListeners() {
 		shared::getPlayer(p->payload.playerId)->getRigidBody()->setMass(200000.f);
 		shared::getPlayer(p->payload.playerId)->getRigidBody()->setLinearDamping(0.5f);
 	});
+
+	manager.addListener(messages::MT_PLAYER_POSITION, [&](BaseMessage *m) {
+		auto p = (domnet::Message<messages::PayloadPlayerPosition> *)m;
+		shared::getCurrPlayer()->setPos(p->payload.pos);
+	});
+
+	manager.addListener(messages::MT_OTHER_PLAYER_POSITION, [&](BaseMessage *m) {
+		auto p = (domnet::Message<messages::PayloadOtherPlayerPosition> *)m;
+		shared::getPlayer(p->payload.id)->setPos(p->payload.pos);
+	});
 }
 
 void engineLoop() {
   
 		e.getCamera()->pos = shared::getCurrPlayer()->_pos;
 		
+		messages::messageRef<messages::PayloadKeyPress>().payload.input = 0;
+
 		if (e.isHeld('D'))
 		{
-			Vec3f right = e.getCamera()->right() * 0.04f;
-			physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			t.p += {right[0], right[1], right[2]};
-			shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b1;
+			//Vec3f right = e.getCamera()->right() * 0.04f;
+			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
+			//t.p += {right[0], right[1], right[2]};
+			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
 		
 		}
 		if (e.isHeld('A'))
 		{
-			Vec3f right = e.getCamera()->right() * -0.04f;
-			physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			t.p += {right[0], right[1], right[2]};
-			shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b10;
+			//Vec3f right = e.getCamera()->right() * -0.04f;
+			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
+			//t.p += {right[0], right[1], right[2]};
+			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
 		}
 		if (e.isHeld('W'))
 		{
-			Vec3f right = e.getCamera()->up();
-			right[1] = 0;
-			right.normalize();
-			right = right * 0.04f;
-			physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			t.p += {right[0], right[1], right[2]};
-			shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b100;
+			//Vec3f right = e.getCamera()->up();
+			//right[1] = 0;
+			//right.normalize();
+			//right = right * 0.04f;
+			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
+			//t.p += {right[0], right[1], right[2]};
+			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
 		}
 		if (e.isHeld('S'))
 		{
-			Vec3f right = e.getCamera()->up();
-			right[1] = 0;
-			right.normalize();
-			right = right * -0.04f;
-			physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			t.p += {right[0], right[1], right[2]};
-			shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b1000;
+			//Vec3f right = e.getCamera()->up();
+			//right[1] = 0;
+			//right.normalize();
+			//right = right * -0.04f;
+			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
+			//t.p += {right[0], right[1], right[2]};
+			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
 		}
 		
 		
@@ -100,13 +115,11 @@ void engineLoop() {
 		if (e.getCamera()->pitch > 1.5f) e.getCamera()->pitch = 1.5f;
 		if (e.getCamera()->pitch < -1.5f) e.getCamera()->pitch = -1.5f;
 		
+		messages::messageRef<messages::PayloadKeyPress>().payload.rot = e.getCamera()->yaw;
 		
-		
-		//Player Rotation
-		Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);
-		physx::PxTransform transform = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-		transform.q = { upright.x,upright.y,upright.z,upright.w };
-		shared::getCurrPlayer()->getRigidBody()->setGlobalPose(transform);
+		manager.send(&messages::messageRef<messages::PayloadKeyPress>());
+
+		shared::setPlayersUpright();
 		
 		e.update(0.004f);
 }

@@ -7,6 +7,7 @@ namespace messages {
 
 	enum MessageType {
 		MT_PLAYER_POSITION,
+		MT_OTHER_PLAYER_POSITION,
 		MT_LOAD_LEVEL_CUBE,
 		MT_LOAD_LEVEL_PLAYER,
 		MT_LOAD_LEVEL_OTHER,
@@ -15,10 +16,14 @@ namespace messages {
 
 	//PlayerPosition
 	struct PayloadPlayerPosition {
-		int id;
 		Vec3f pos;
 	};
-	
+
+	struct PayloadOtherPlayerPosition {
+		Vec3f pos;
+		int id;
+	};
+
 	//Load Cube
 	struct PayloadLoadLevelCube {
 		int cubeId;
@@ -43,6 +48,7 @@ namespace messages {
 
 	struct PayloadKeyPress {
 		char input;
+		float rot;
 	};
 
 
@@ -50,6 +56,9 @@ namespace messages {
 	MessageType getMessageType() {
 		if constexpr (std::is_same<T, PayloadPlayerPosition>::value) {
 			return MT_PLAYER_POSITION;
+		}
+		else if constexpr (std::is_same<T, PayloadOtherPlayerPosition>::value) {
+			return MT_OTHER_PLAYER_POSITION;
 		}
 		else if constexpr (std::is_same<T, PayloadLoadLevelCube>::value) {
 			return MT_LOAD_LEVEL_CUBE;

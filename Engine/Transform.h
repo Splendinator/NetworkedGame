@@ -23,6 +23,7 @@ public:
 	Mat4f _modelMatrix;
 	bool _dirty = true;
 
+	void setPos(Vec3f pos);
 	
 	Quatf _rot;
 	Vec3f _pos;
