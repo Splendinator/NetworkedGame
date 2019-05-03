@@ -5,14 +5,20 @@
 #include "ManagerClient.h"
 #include "Messages.h"
 #include "Shared.h"
+#include "Timer.h"
 
 using namespace domnet;
 
 Engine e;
-ManagerClient manager;
+ManagerClient manager(0.0f,0.f);
 
 static const char *IP_ADDRESS = "127.0.0.1";
 
+static const float NETWORK_UPDATE_DELTA = 1/32.f;
+static const float PHYSICS_UPDATE_DELTA = 1/128.f;	
+
+Timer networkTimer;
+Timer deltaTimer;
 
 void networkSetup() {
 	
@@ -28,7 +34,7 @@ void networkSetup() {
 void engineSetup() {
 
 	
-	e.init();
+	e.init(PHYSICS_UPDATE_DELTA);
 }
 
 void initListeners() {
@@ -63,7 +69,7 @@ void initListeners() {
 	});
 }
 
-void engineLoop() {
+void engineLoop(float delta) {
   
 		e.getCamera()->pos = shared::getCurrPlayer()->_pos;
 		
@@ -72,41 +78,22 @@ void engineLoop() {
 		if (e.isHeld('D'))
 		{
 			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b1;
-			//Vec3f right = e.getCamera()->right() * 0.04f;
-			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			//t.p += {right[0], right[1], right[2]};
-			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
-		
+			
 		}
 		if (e.isHeld('A'))
 		{
 			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b10;
-			//Vec3f right = e.getCamera()->right() * -0.04f;
-			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			//t.p += {right[0], right[1], right[2]};
-			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+			
 		}
 		if (e.isHeld('W'))
 		{
 			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b100;
-			//Vec3f right = e.getCamera()->up();
-			//right[1] = 0;
-			//right.normalize();
-			//right = right * 0.04f;
-			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			//t.p += {right[0], right[1], right[2]};
-			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+			
 		}
 		if (e.isHeld('S'))
 		{
 			messages::messageRef<messages::PayloadKeyPress>().payload.input += 0b1000;
-			//Vec3f right = e.getCamera()->up();
-			//right[1] = 0;
-			//right.normalize();
-			//right = right * -0.04f;
-			//physx::PxTransform t = shared::getCurrPlayer()->getRigidActor()->getGlobalPose();
-			//t.p += {right[0], right[1], right[2]};
-			//shared::getCurrPlayer()->getRigidBody()->setGlobalPose(t);
+
 		}
 		
 		
@@ -117,14 +104,22 @@ void engineLoop() {
 		
 		messages::messageRef<messages::PayloadKeyPress>().payload.rot = e.getCamera()->yaw;
 		
-		manager.send(&messages::messageRef<messages::PayloadKeyPress>());
+		
 
 		shared::setPlayersUpright();
 		
-		e.update(0.004f);
+		e.update(delta);
 }
 
+void networkLoop() {
+	manager.send(&messages::messageRef<messages::PayloadKeyPress>(), false);
+}
+
+
 int main() {
+
+
+	float delta;
 
 	initListeners();
 
@@ -135,11 +130,20 @@ int main() {
 		manager.update();
 	}
 
-
+	networkTimer.resetTimer();
+	deltaTimer.resetTimer();
 	for (;;) {
-		manager.update();
-		engineLoop();
+		if (networkTimer.getDelta() > NETWORK_UPDATE_DELTA) {
+			networkTimer -= NETWORK_UPDATE_DELTA;
+			networkLoop();
+			manager.update();
+		}
+		delta = deltaTimer.getDelta();
+		deltaTimer.resetTimer();
+		engineLoop(delta);
+
 	}
+	
 
 
 	//getchar();

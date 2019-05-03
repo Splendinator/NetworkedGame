@@ -5,6 +5,8 @@
 
 Graphics g;
 std::vector<Transform *> noDraw;
+float physDelta;
+float physDeltaCounter = 0.0f;
 
 void cleanUp() {
 	//exit(0);
@@ -20,7 +22,8 @@ Engine::~Engine() {
 	Physics::cleanUp();
 }
 
-void Engine::init() {
+void Engine::init(float pd) {
+	physDelta = pd;
 	g.initialize();
 	Physics::initialize();
 	g.setOnWindowClose(cleanUp);
@@ -73,9 +76,16 @@ Camera * Engine::getCamera()
 	return g.getCamera();
 }
 
+#include <iostream>
+
 void Engine::update(float delta) {
+	physDeltaCounter += delta;
 	updateTransforms();
 	g.update();
-	Physics::update(delta);
+
+	while (physDeltaCounter > physDelta) {
+		physDeltaCounter -= physDelta;
+		Physics::update(physDelta);
+	}
 	
 }

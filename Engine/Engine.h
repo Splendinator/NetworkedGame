@@ -3,7 +3,7 @@
 #include "Camera.h"
 
 struct Engine {
-	void init();
+	void init(float physicsDelta = 1/120.f);
 	void update(float delta);
 	Transform *addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic = true, bool draw = true);
 	Transform *addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic = true, bool draw = true);
