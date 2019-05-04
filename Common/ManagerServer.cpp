@@ -33,6 +33,7 @@ void ManagerServer::send(domnet::BaseMessage *m, unsigned int player, bool useTC
 		delaySend(_latency, m, player, useTCP);
 	}
 	else {
+		processBandwidth(m);
 		_server->sendMessage(m, player, (useTCP ? domnet::DN_TCP : domnet::DN_UDP));;
 	}
 	
@@ -44,6 +45,7 @@ void ManagerServer::broadcast(domnet::BaseMessage *m, bool useTCP, bool useLaten
 		delaySend(_latency, m, useTCP);
 	}
 	else {
+		processBandwidth(m);
 		_server->broadcast(m, (useTCP ? domnet::DN_TCP : domnet::DN_UDP));
 	}
 }
@@ -73,6 +75,7 @@ void ManagerServer::update()
 		}
 	}
 	delayedUpdate();
+	updateBandwidth();
 }
 
 

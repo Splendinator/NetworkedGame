@@ -12,6 +12,7 @@ public:
 
 	bool dropPacket();
 	
+	void processBandwidth(domnet::BaseMessage *m);
 
 
 protected:
@@ -19,6 +20,7 @@ protected:
 
 	domnet::BaseMessage *storeMessage(domnet::BaseMessage *m);
 	void delMessage(domnet::BaseMessage *m);
+	void updateBandwidth();
 
 	struct entry {
 		int _millis;
@@ -33,7 +35,8 @@ protected:
 	std::vector<entry> _delayedFuncs;
 
 private:
-	
+	int bitties = 0;
+	const char *logFilePath = "../Log/Bandwidth.txt";
 
 };
 

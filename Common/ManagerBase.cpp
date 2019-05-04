@@ -2,7 +2,7 @@
 #include <random>
 #include <thread>
 #include <iostream>
-
+#include <fstream>
 
 ManagerBase::ManagerBase(float loss, float lat)
 {
@@ -20,6 +20,8 @@ bool ManagerBase::dropPacket()
 {
 	return rand() <= int(RAND_MAX * _failChance);
 }
+
+
 
 void ManagerBase::delaySend(int millis,domnet::BaseMessage *m, bool useTCP) {
 
@@ -44,4 +46,39 @@ void ManagerBase::delMessage(domnet::BaseMessage *m) {
 			break;
 		}
 	}
+}
+
+void ManagerBase::processBandwidth(domnet::BaseMessage * m)
+{
+	bitties += m->getSize() * 8;
+}
+
+void ManagerBase::updateBandwidth()
+{
+	static std::chrono::system_clock::time_point prev = std::chrono::system_clock::now();
+	static std::chrono::system_clock::time_point curr;
+	static int millis = 0;
+	static std::ofstream fs(logFilePath);
+
+	int index = 0;
+	const char *suffix[5] = { "bps","Kbps","Mbps","Gbps","Tbps" };
+
+	curr = std::chrono::system_clock::now();
+	
+	millis += (curr - prev).count() / (std::chrono::system_clock::period::den / 1000);
+
+	prev = curr;
+
+	if (millis > 1000) {
+		while (bitties > 1000) {
+			++index;
+			bitties /= 1000;
+		}
+
+		fs << bitties << " " << suffix[index] << '\n';
+		bitties = 0;
+		millis -= 1000;
+	}
+
+
 }

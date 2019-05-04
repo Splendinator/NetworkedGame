@@ -1,38 +1,13 @@
 #include <iostream>
-#include "../Engine/Quaternion.h"
-#include "../Engine/Engine.h"
-#include "../Engine/Math.h" 
-#include "ManagerServer.h"
+
 #include "Messages.h"
-#include "Level.h"
-#include "Shared.h"
-#include "Timer.h"
+#include "ServerFramework.cpp"
 
 
 
 
 
-using namespace domnet;
-
-Engine e;
-Transform *player;
-ManagerServer manager(0.0f,200.f);
-
-static const int NUM_PLAYERS = 1;
-static const float PLAYER_MOVE_SPEED = 0.15f;
-
-static const float CAMERA_MOVE_SPEED = 0.02f;
-static const float CAMERA_SENSITIVITY = 200.f;
-
-static const float NETWORK_UPDATE_DELTA = 1 / 32.f;
-static const float PHYSICS_UPDATE_DELTA = 1 / 128.f;
-
-Timer networkTimer;
-Timer deltaTimer;
-
-
-
-void networkSetup() {
+void preInit() {
 	
 	manager.addListener(messages::MT_KEY_PRESS, [&](BaseMessage *bm, int i) {
 		auto  m = (Message<messages::PayloadKeyPress> *)bm;
@@ -71,14 +46,11 @@ void networkSetup() {
 
 	});
 
-	manager.host(NUM_PLAYERS);
-
 }
 
-void engineSetup() {
+void postInit() {
 
-	e.init(PHYSICS_UPDATE_DELTA);
-	Level::init(&e, &manager);
+	
 	Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
 	Level::loadCube({ 0.5,4,0 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
 	Level::loadCube({ -0.5,7,0.5 }, { 1,1,1 }, Quatf::quatFromEuler({ 0,1,0 }, 0.f));
@@ -96,47 +68,7 @@ void engineSetup() {
 
 }
 
-void engineLoop(float delta) {
 
-
-	if (e.isHeld('D'))
-	{
-		e.getCamera()->pos += e.getCamera()->right() * CAMERA_MOVE_SPEED;
-	}
-	if (e.isHeld('A'))
-	{
-		e.getCamera()->pos -= e.getCamera()->right() * CAMERA_MOVE_SPEED;
-	}
-	if (e.isHeld('W'))
-	{
-		e.getCamera()->pos += e.getCamera()->foward() * CAMERA_MOVE_SPEED;
-	}
-	if (e.isHeld('S'))
-	{
-		e.getCamera()->pos -= e.getCamera()->foward() * CAMERA_MOVE_SPEED;
-	}
-	if (e.isHeld(' '))
-	{
-		e.getCamera()->pos += e.getCamera()->up() * CAMERA_MOVE_SPEED;
-	}
-	if (e.isHeld(0x11))
-	{
-		e.getCamera()->pos -= e.getCamera()->up() * CAMERA_MOVE_SPEED;
-	}
-
-
-	e.getCamera()->yaw += e.getMouseXDelta() / CAMERA_SENSITIVITY;
-	e.getCamera()->pitch += e.getMouseYDelta() / CAMERA_SENSITIVITY;
-	if (e.getCamera()->pitch > 1.5f) e.getCamera()->pitch = 1.5f;
-	if (e.getCamera()->pitch < -1.5f) e.getCamera()->pitch = -1.5f;
-	
-	shared::setPlayersUpright();
-
-	e.update(delta);
-
-	
-
-}
 
 void networkLoop() {
 	for (int i = 0; i < NUM_PLAYERS; ++i) {
@@ -156,29 +88,7 @@ void networkLoop() {
 	}
 }
 
-int main() {
 
-	float delta;
+void engineLoop(float delta) {
 
-	networkSetup();
-	engineSetup();
-	
-
-	networkTimer.resetTimer();
-	deltaTimer.resetTimer();
-	for (;;) {
-		if (networkTimer.getDelta() > NETWORK_UPDATE_DELTA) {
-			networkTimer -= NETWORK_UPDATE_DELTA;
-			manager.update();
-			networkLoop();
-		}
-		delta = deltaTimer.getDelta();
-		deltaTimer.resetTimer();
-		engineLoop(delta);
-		
-	}
-
-
-	//getchar();
-	return 0;
 }

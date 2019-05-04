@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Level.h" />
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="ManagerClient.h" />
     <ClInclude Include="ManagerServer.h" />
@@ -137,10 +138,20 @@
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientFramework.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="HostFramework.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="ManagerBase.cpp" />
     <ClCompile Include="ManagerClient.cpp" />
     <ClCompile Include="ManagerServer.cpp" />
     <ClCompile Include="Messages.cpp" />
+    <ClCompile Include="ServerFramework.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Shared.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
