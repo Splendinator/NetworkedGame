@@ -5,6 +5,7 @@
 
 void preInit() {
 
+	engine.setDoPhysics(false);
 
 	manager.addListener(messages::MT_PLAYER_POSITION, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadPlayerPosition> *)m;
@@ -14,6 +15,14 @@ void preInit() {
 	manager.addListener(messages::MT_OTHER_PLAYER_POSITION, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadOtherPlayerPosition> *)m;
 		shared::getPlayer(p->payload.id)->setPos(p->payload.pos);
+	});
+
+	manager.addListener(messages::MT_DYNAMIC_POSITION, [&](BaseMessage *m) {
+		auto p = (domnet::Message<messages::PayloadDynamicPosition> *)m;
+		auto transform = shared::getDynamic(p->payload.id)->getRigidBody()->getGlobalPose();
+		transform.q = { p->payload.rot.x,p->payload.rot.y,p->payload.rot.z,p->payload.rot.w };
+		transform.p = { p->payload.pos[0], p->payload.pos[1], p->payload.pos[2] };
+		shared::getDynamic(p->payload.id)->getRigidBody()->setGlobalPose(transform);
 	});
 }
 

@@ -16,5 +16,9 @@ struct Engine {
 
 	Camera *getCamera();
 
+	void setDoPhysics(bool b) { doPhysics = b; };
 	~Engine();
+
+private:
+	bool doPhysics = true;
 };

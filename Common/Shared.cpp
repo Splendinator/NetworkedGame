@@ -48,6 +48,7 @@ void shared::setCurrPlayer(Transform * t)
 	player = t;
 }
 
+
 void shared::setPlayersUpright()
 {
 	Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);

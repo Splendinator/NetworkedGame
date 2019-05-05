@@ -3,6 +3,7 @@
 #include "../Engine/Math.h"
 #include "DomNet.h"
 #include "Timer.h"
+#include "Shared.h"
 
 
 

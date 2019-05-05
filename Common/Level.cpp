@@ -20,11 +20,17 @@ namespace Level {
 	}
 
 	void loadCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, bool visible) {
-		shared::setDynamic(e->addCube(pos, scale, rot, dynamic, visible), dynamicIndex);
-
 		auto &m = messages::messageRef<messages::PayloadLoadLevelCube>().payload;
+		
+		if (dynamic) {
+			shared::setDynamic(e->addCube(pos, scale, rot, dynamic, visible), dynamicIndex);
+			m.cubeId = dynamicIndex++;
+		}
+		else {
+			m.cubeId = 0;
+			e->addCube(pos, scale, rot, dynamic, visible);
+		}
 
-		m.cubeId = dynamicIndex++;
 		m.pos = pos;
 		m.scale = scale;
 		m.rot = rot;
@@ -55,6 +61,11 @@ namespace Level {
 				s->send(&messages::messageRef<messages::PayloadLoadLevelOther>(), i, true);
 			}
 		}
+	}
+
+	int getNumDynamics()
+	{
+		return dynamicIndex;
 	}
 
 	//Transform * getPlayer(int id)

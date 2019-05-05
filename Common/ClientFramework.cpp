@@ -1,13 +1,14 @@
 #include "HostFramework.cpp"
-#include "Shared.h"
 #include "ManagerClient.h"
 #include "Messages.h"
 
-ManagerClient manager(0.0f, 0.f);
+
+static float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sent (1.0f = 100%)
+static float LATENCY = 0.f;	//Latency in MS	
 
 static const char *IP_ADDRESS = "127.0.0.1";
 
-
+ManagerClient manager(PACKET_DROP_PCT, LATENCY);
 
 void networkSetup() {
 	Address a;
@@ -18,7 +19,13 @@ void networkSetup() {
 void initLevelLoading() {
 	manager.addListener(messages::MT_LOAD_LEVEL_CUBE, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadLoadLevelCube> *)m;
-		shared::setDynamic(engine.addCube(p->payload.pos, p->payload.scale, p->payload.rot, p->payload.dynamic, p->payload.visible), p->payload.cubeId);
+		if (p->payload.dynamic) {
+			shared::setDynamic(engine.addCube(p->payload.pos, p->payload.scale, p->payload.rot, p->payload.dynamic, p->payload.visible), p->payload.cubeId);
+		}
+		else
+		{
+			engine.addCube(p->payload.pos, p->payload.scale, p->payload.rot, p->payload.dynamic, p->payload.visible);
+		}
 	});
 
 	manager.addListener(messages::MT_LOAD_LEVEL_PLAYER, [&](BaseMessage *m) {

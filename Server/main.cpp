@@ -4,11 +4,12 @@
 #include "ServerFramework.cpp"
 
 
+static const float PLAYER_MOVE_SPEED = 0.15f;
 
 
 
 void preInit() {
-	
+
 	manager.addListener(messages::MT_KEY_PRESS, [&](BaseMessage *bm, int i) {
 		auto  m = (Message<messages::PayloadKeyPress> *)bm;
 		auto p = shared::getPlayer(i);
@@ -85,6 +86,25 @@ void networkLoop() {
 				manager.send(&messages::messageRef<messages::PayloadOtherPlayerPosition>(), j, false);
 			}
 		}
+
+		auto &dynamicPayload = messages::messageRef<messages::PayloadDynamicPosition>().payload;
+		for (int j = 0; j < Level::getNumDynamics(); ++j) {
+			
+			//std::cout << shared::getDynamic(j) << '\n';
+
+			auto pos = shared::getDynamic(j)->getRigidActor()->getGlobalPose().p;
+			auto rot = shared::getDynamic(j)->getRigidActor()->getGlobalPose().q;
+			
+			dynamicPayload.id = j;
+			dynamicPayload.pos = { pos.x,pos.y,pos.z };
+			dynamicPayload.rot.x = rot.x;
+			dynamicPayload.rot.y = rot.y;
+			dynamicPayload.rot.z = rot.z;
+			dynamicPayload.rot.w = rot.w;
+
+			manager.send(&messages::messageRef<messages::PayloadDynamicPosition>(), false);
+		}
+		//std::cout << "END\n\n";
 	}
 }
 

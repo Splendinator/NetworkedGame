@@ -79,13 +79,15 @@ Camera * Engine::getCamera()
 #include <iostream>
 
 void Engine::update(float delta) {
-	physDeltaCounter += delta;
 	updateTransforms();
 	g.update();
 
-	while (physDeltaCounter > physDelta) {
-		physDeltaCounter -= physDelta;
-		Physics::update(physDelta);
+	if (doPhysics) {
+		physDeltaCounter += delta;
+		while (physDeltaCounter > physDelta) {
+			physDeltaCounter -= physDelta;
+			Physics::update(physDelta);
+		}
 	}
 	
 }

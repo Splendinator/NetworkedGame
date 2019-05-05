@@ -7,6 +7,7 @@ namespace messages {
 
 	enum MessageType {
 		MT_PLAYER_POSITION,
+		MT_DYNAMIC_POSITION,
 		MT_OTHER_PLAYER_POSITION,
 		MT_LOAD_LEVEL_CUBE,
 		MT_LOAD_LEVEL_PLAYER,
@@ -17,6 +18,12 @@ namespace messages {
 	//PlayerPosition
 	struct PayloadPlayerPosition {
 		Vec3f pos;
+	};
+
+	struct PayloadDynamicPosition {
+		int id;
+		Vec3f pos;
+		Quatf rot;
 	};
 
 	struct PayloadOtherPlayerPosition {
@@ -56,6 +63,9 @@ namespace messages {
 	MessageType getMessageType() {
 		if constexpr (std::is_same<T, PayloadPlayerPosition>::value) {
 			return MT_PLAYER_POSITION;
+		}
+		else if constexpr (std::is_same<T, PayloadDynamicPosition>::value) {
+			return MT_DYNAMIC_POSITION;
 		}
 		else if constexpr (std::is_same<T, PayloadOtherPlayerPosition>::value) {
 			return MT_OTHER_PLAYER_POSITION;

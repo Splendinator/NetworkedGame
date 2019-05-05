@@ -1,16 +1,17 @@
 #include "HostFramework.cpp"
 #include "ManagerServer.h"
-#include "Shared.h"
+
 #include "Level.h"
 
-ManagerServer manager(0.0f, 0.f);
+static float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sent (1.0f = 100%)
+static float LATENCY = 0.f;	//Latency in MS	
 
 static const int NUM_PLAYERS = 1;
-static const float PLAYER_MOVE_SPEED = 0.15f;
 
 static const float CAMERA_MOVE_SPEED = 0.02f;
 static const float CAMERA_SENSITIVITY = 200.f;
 
+ManagerServer manager(PACKET_DROP_PCT, LATENCY);
 
 
 void baseLoop(float delta) {
