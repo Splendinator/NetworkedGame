@@ -20,27 +20,27 @@ void preInit() {
 		Vec3f v;
 		if (m->payload.input & 0b1   ) { // D
 			v = c.right() * PLAYER_MOVE_SPEED;
-			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			auto pose = shared::getPlayer(i).transform->getRigidBody()->getGlobalPose();
 			pose.p += {v[0], v[1], v[2]};
-			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+			shared::getPlayer(i).transform->getRigidActor()->setGlobalPose(pose);
 		}
 		if (m->payload.input & 0b10  ) { // A
 			v = -c.right() * PLAYER_MOVE_SPEED;
-			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			auto pose = shared::getPlayer(i).transform->getRigidBody()->getGlobalPose();
 			pose.p += {v[0], v[1], v[2]};
-			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+			shared::getPlayer(i).transform->getRigidActor()->setGlobalPose(pose);
 		}
 		if (m->payload.input & 0b100 ) { // W
 			v = c.foward() * PLAYER_MOVE_SPEED;
-			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			auto pose = shared::getPlayer(i).transform->getRigidBody()->getGlobalPose();
 			pose.p += {v[0], v[1], v[2]};
-			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+			shared::getPlayer(i).transform->getRigidActor()->setGlobalPose(pose);
 		}
 		if (m->payload.input & 0b1000) { // S
 			v = -c.foward() * PLAYER_MOVE_SPEED;
-			auto pose = shared::getPlayer(i)->getRigidBody()->getGlobalPose();
+			auto pose = shared::getPlayer(i).transform->getRigidBody()->getGlobalPose();
 			pose.p += {v[0], v[1], v[2]};
-			shared::getPlayer(i)->getRigidActor()->setGlobalPose(pose);
+			shared::getPlayer(i).transform->getRigidActor()->setGlobalPose(pose);
 		}
 
 
@@ -73,8 +73,8 @@ void postInit() {
 
 void networkLoop() {
 	for (int i = 0; i < NUM_PLAYERS; ++i) {
-		messages::messageRef<messages::PayloadPlayerPosition>().payload.pos = shared::getPlayer(i)->_pos;
-		messages::messageRef<messages::PayloadOtherPlayerPosition>().payload.pos = shared::getPlayer(i)->_pos;
+		messages::messageRef<messages::PayloadPlayerPosition>().payload.pos = shared::getPlayer(i).transform->_pos;
+		messages::messageRef<messages::PayloadOtherPlayerPosition>().payload.pos = shared::getPlayer(i).transform->_pos;
 		messages::messageRef<messages::PayloadOtherPlayerPosition>().payload.id = i;
 
 		for (int j = 0; j < NUM_PLAYERS; ++j) {
@@ -110,5 +110,9 @@ void networkLoop() {
 
 
 void engineLoop(float delta) {
+
+}
+
+void physicsLoop() {
 
 }

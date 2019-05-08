@@ -4,6 +4,7 @@
 #include <vector>
 
 Graphics g;
+Physics p;
 std::vector<Transform *> noDraw;
 float physDelta;
 float physDeltaCounter = 0.0f;
@@ -19,19 +20,19 @@ void updateTransforms() {
 }
 
 Engine::~Engine() {
-	Physics::cleanUp();
+	p.cleanUp();
 }
 
 void Engine::init(float pd) {
 	physDelta = pd;
 	g.initialize();
-	Physics::initialize();
+	p.initialize();
 	g.setOnWindowClose(cleanUp);
 }
 
 Transform *Engine::addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, bool draw) {
 	Transform *cube = g.addCube(pos,scale,rot, dynamic);
-	cube->setRigidBody(Physics::addOBB(pos,scale,rot, dynamic));
+	cube->setRigidBody(p.addOBB(pos,scale,rot, dynamic));
 	return cube;
 }
 
@@ -47,7 +48,7 @@ Transform * Engine::addCapsule(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, 
 		capsule = new Transform(dynamic);
 		noDraw.push_back(capsule);
 	}
-	capsule->setRigidBody(Physics::addCapsule(pos, scale, rot, dynamic));
+	capsule->setRigidBody(p.addCapsule(pos, scale, rot, dynamic));
 	return capsule;
 }
 
@@ -78,16 +79,20 @@ Camera * Engine::getCamera()
 
 #include <iostream>
 
-void Engine::update(float delta) {
+int Engine::update(float delta) {
 	updateTransforms();
 	g.update();
+	
+	int i = 0;
 
 	if (doPhysics) {
 		physDeltaCounter += delta;
 		while (physDeltaCounter > physDelta) {
 			physDeltaCounter -= physDelta;
-			Physics::update(physDelta);
+			p.update(physDelta);
+			++i;
 		}
 	}
+	return i;
 	
 }

@@ -4,6 +4,7 @@
 #include "Messages.h"
 #include "../Engine/Math.h"
 #include "Shared.h"
+#include <chrono>
 
 #include <iostream>
 
@@ -11,6 +12,8 @@ Engine *e;
 ManagerServer *s;
 
 int dynamicIndex = 0;
+int numPlayers = 0;
+int numObjects = 0;
 
 namespace Level {
 
@@ -38,16 +41,18 @@ namespace Level {
 		m.visible = visible;
 
 		s->broadcast(&messages::messageRef<messages::PayloadLoadLevelCube>());
+		++numObjects;
 		
 	}
 
 	void loadPlayer(int playerId, Vec3f pos)
 	{
 		shared::setPlayer(e->addCapsule(pos, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, true), playerId);
-		shared::getPlayer(playerId)->getRigidBody()->setMass(200000.f);
-		shared::getPlayer(playerId)->getRigidBody()->setLinearDamping(0.5f);
+		shared::getPlayer(playerId).transform->getRigidBody()->setMass(200000.f);
+		shared::getPlayer(playerId).transform->getRigidBody()->setLinearDamping(0.5f);
 
 		//Player
+		messages::messageRef<messages::PayloadLoadLevelPlayer>().payload.playerId = playerId;
 		messages::messageRef<messages::PayloadLoadLevelPlayer>().payload.pos = pos;
 
 		//OtherPlayer
@@ -61,6 +66,14 @@ namespace Level {
 				s->send(&messages::messageRef<messages::PayloadLoadLevelOther>(), i, true);
 			}
 		}
+		++numPlayers;
+	}
+
+	void finish() {
+		messages::messageRef<messages::PayloadReady>().payload.numObjects = numObjects;
+		messages::messageRef<messages::PayloadReady>().payload.numPlayers = numPlayers;
+		messages::messageRef<messages::PayloadReady>().payload.epoch = std::chrono::system_clock::now().time_since_epoch().count();
+		s->send(&messages::messageRef<messages::PayloadReady>(), 0);
 	}
 
 	int getNumDynamics()
@@ -68,6 +81,13 @@ namespace Level {
 		return dynamicIndex;
 	}
 
+	int getNumPlayers() {
+		return numPlayers;
+	}
+
+	int getNumObjects() {
+		return numObjects;
+	}
 	//Transform * getPlayer(int id)
 	//{
 	//	return playerTransform[id];

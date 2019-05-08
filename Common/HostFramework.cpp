@@ -4,13 +4,11 @@
 #include "DomNet.h"
 #include "Timer.h"
 #include "Shared.h"
+#include "Definitions.h"
 
 
 
 using namespace domnet;
-
-static const float NETWORK_UPDATE_DELTA = 1 / 64.f;
-static const float PHYSICS_UPDATE_DELTA = 1 / 128.f;
 
 Engine engine;
 
@@ -29,3 +27,6 @@ void preInit();
 
 //Things to do after initializing engine and network
 void postInit();
+
+//Called every time the physics engine is ran.
+void physicsLoop();

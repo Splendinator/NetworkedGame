@@ -4,17 +4,15 @@
 #include "../Engine/Transform.h"
 
 using namespace shared;
+using namespace Networking;
 
 namespace shared {
 
-	const int NUM_PLAYERS = 32;
-	const int NUM_OBJECTS = 2048;
+	Player players[MAX_PLAYERS] = {};
 
-	Transform *players[NUM_PLAYERS] = {};
+	Transform *dynamicObjects[MAX_OBJECTS] = {};
 
-	Transform *dynamicObjects[NUM_OBJECTS] = {};
-
-	Transform *player = nullptr;
+	Player *player;
 
 }
 
@@ -23,7 +21,7 @@ Transform *shared::getDynamic(int id)
 	return dynamicObjects[id];
 }
 
-Transform *shared::getPlayer(int id)
+Player &shared::getPlayer(int id)
 {
 	return players[id];
 }
@@ -33,19 +31,19 @@ void shared::setDynamic(Transform *t, int id)
 	dynamicObjects[id] = t;
 }
 
-void shared::setPlayer(Transform *t, int id)
+void shared::setPlayer(Transform *t, int id, float yaw)
 {
-	players[id] = t;
+	players[id] = Networking::Player({ t,yaw });
 }
 
-Transform * shared::getCurrPlayer()
+Player &shared::getCurrPlayer()
 {
-	return player;
+	return *player;
 }
 
-void shared::setCurrPlayer(Transform * t)
+void shared::setCurrPlayer(int id)
 {
-	player = t;
+	player = &players[id];
 }
 
 
@@ -53,17 +51,17 @@ void shared::setPlayersUpright()
 {
 	Quatf upright = Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f);
 	
-	for (int i = 0; i < NUM_PLAYERS; ++i) {
-		if (players[i]) {
-			physx::PxTransform transform = players[i]->getRigidActor()->getGlobalPose();
+	for (int i = 0; i < MAX_PLAYERS; ++i) {
+		if (players[i].transform) {
+			physx::PxTransform transform = players[i].transform->getRigidActor()->getGlobalPose();
 			transform.q = { upright.x,upright.y,upright.z,upright.w };
-			players[i]->getRigidBody()->setGlobalPose(transform);
+			players[i].transform->getRigidBody()->setGlobalPose(transform);
 		}
 	}
 	
-	if (player) {
-		physx::PxTransform transform = player->getRigidActor()->getGlobalPose();
-		transform.q = { upright.x,upright.y,upright.z,upright.w };
-		player->getRigidBody()->setGlobalPose(transform);
-	}
+	//if (player.transform) {
+	//	physx::PxTransform transform = player.transform->getRigidActor()->getGlobalPose();
+	//	transform.q = { upright.x,upright.y,upright.z,upright.w };
+	//	player.transform->getRigidBody()->setGlobalPose(transform);
+	//}
 }

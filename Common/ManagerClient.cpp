@@ -54,6 +54,7 @@ void ManagerClient::delayedUpdate()
 			send(it->m, (it->useTCP ? domnet::DN_TCP : domnet::DN_UDP),false);
 			delMessage(it->m);
 			it = _delayedFuncs.erase(it);
+			if (_delayedFuncs.size() == 0) break;
 		}
 	}
 	prev = curr;

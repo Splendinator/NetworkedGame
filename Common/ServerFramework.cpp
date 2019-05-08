@@ -3,8 +3,8 @@
 
 #include "Level.h"
 
-static float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sent (1.0f = 100%)
-static float LATENCY = 0.f;	//Latency in MS	
+static const  float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sent (1.0f = 100%)
+static const  float LATENCY = 200.f;	//Latency in MS	
 
 static const int NUM_PLAYERS = 1;
 
@@ -14,7 +14,7 @@ static const float CAMERA_SENSITIVITY = 200.f;
 ManagerServer manager(PACKET_DROP_PCT, LATENCY);
 
 
-void baseLoop(float delta) {
+int baseLoop(float delta) {
 
 
 	if (engine.isHeld('D'))
@@ -50,7 +50,7 @@ void baseLoop(float delta) {
 
 	shared::setPlayersUpright();
 
-	engine.update(delta);
+	return engine.update(delta);
 
 
 
@@ -60,25 +60,30 @@ void baseLoop(float delta) {
 
 void main() {
 	float delta;
+	int runPhysics;
 	
 	preInit();
-	engine.init(PHYSICS_UPDATE_DELTA);
+	engine.init(Networking::PHYSICS_UPDATE_DELTA);
 	manager.host(NUM_PLAYERS);
 	Level::init(&engine, &manager);
 	postInit();
+	Level::finish();
 
 
 	networkTimer.resetTimer();
 	deltaTimer.resetTimer();
 	for (;;) {
-		if (networkTimer.getDelta() > NETWORK_UPDATE_DELTA) {
-			networkTimer -= NETWORK_UPDATE_DELTA;
+		if (networkTimer.getDelta() > Networking::NETWORK_UPDATE_DELTA) {
+			networkTimer -= Networking::NETWORK_UPDATE_DELTA;
 			manager.update();
 			networkLoop();
 		}
 		delta = deltaTimer.getDelta();
 		deltaTimer.resetTimer();
-		baseLoop(delta);
+		runPhysics = baseLoop(delta);
+		for (int i = 0; i < runPhysics; ++i) {
+			physicsLoop();
+		}
 		engineLoop(delta);
 
 	}

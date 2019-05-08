@@ -9,12 +9,12 @@ void preInit() {
 
 	manager.addListener(messages::MT_PLAYER_POSITION, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadPlayerPosition> *)m;
-		shared::getCurrPlayer()->setPos(p->payload.pos);
+		shared::getCurrPlayer().transform->setPos(p->payload.pos);
 	});
 
 	manager.addListener(messages::MT_OTHER_PLAYER_POSITION, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadOtherPlayerPosition> *)m;
-		shared::getPlayer(p->payload.id)->setPos(p->payload.pos);
+		shared::getPlayer(p->payload.id).transform->setPos(p->payload.pos);
 	});
 
 	manager.addListener(messages::MT_DYNAMIC_POSITION, [&](BaseMessage *m) {
@@ -32,7 +32,7 @@ void postInit() {
 
 void engineLoop(float delta) {
   
-		engine.getCamera()->pos = shared::getCurrPlayer()->_pos;
+		engine.getCamera()->pos = shared::getCurrPlayer().transform->_pos;
 		
 		messages::messageRef<messages::PayloadKeyPress>().payload.input = 0;
 
@@ -65,3 +65,6 @@ void networkLoop() {
 	manager.send(&messages::messageRef<messages::PayloadKeyPress>(), false);
 }
 
+void physicsLoop() {
+
+}

@@ -12,7 +12,19 @@ namespace messages {
 		MT_LOAD_LEVEL_CUBE,
 		MT_LOAD_LEVEL_PLAYER,
 		MT_LOAD_LEVEL_OTHER,
-		MT_KEY_PRESS
+		MT_KEY_PRESS,
+		MT_READY,
+		MT_PREDICTION_OTHER_POSITION,
+		MT_PREDICTION_DYNAMIC_POSITION,
+		MT_PREDICTION_PLAYER_POSITION,
+	};
+
+
+	//Ready Check
+	struct PayloadReady {
+		int numObjects;
+		int numPlayers;
+		unsigned long long epoch;
 	};
 
 	//PlayerPosition
@@ -43,6 +55,7 @@ namespace messages {
 
 	//Load Player
 	struct PayloadLoadLevelPlayer {
+		int playerId;
 		Vec3f pos;
 	};
 
@@ -58,6 +71,33 @@ namespace messages {
 		float rot;
 	};
 
+
+	//*** Clock Synced Messages ***
+
+		//PlayerPosition
+	struct PayloadPredictionPlayerPosition {
+		unsigned int time;
+		Vec3f pos;
+		float movementDir;
+
+	};
+
+	//PlayerPosition
+	struct PayloadPredictionOtherPosition{
+		int id;
+		unsigned int time;
+		Vec3f pos;
+		float movementDir;
+	};
+
+	struct PayloadPredictionDynamicPosition {
+		int id;
+		unsigned int time;
+		Vec3f pos;
+		Quatf rot;
+		Vec3f linVel;
+		Vec3f angVel;
+	};
 
 	template <typename T>
 	MessageType getMessageType() {
@@ -82,6 +122,19 @@ namespace messages {
 		else if constexpr (std::is_same<T, PayloadKeyPress>::value) {
 			return MT_KEY_PRESS;
 		}
+		else if constexpr (std::is_same<T, PayloadReady>::value) {
+			return MT_READY;
+		}
+		else if constexpr (std::is_same<T, PayloadPredictionOtherPosition>::value) {
+			return MT_PREDICTION_OTHER_POSITION;
+		}
+		else if constexpr (std::is_same<T, PayloadPredictionDynamicPosition>::value) {
+			return MT_PREDICTION_DYNAMIC_POSITION;
+		}
+		else if constexpr (std::is_same<T, PayloadPredictionPlayerPosition>::value) {
+			return MT_PREDICTION_PLAYER_POSITION;
+		}
+
 		else {
 			static_assert(false,"Add message type above!");
 		}
