@@ -4,7 +4,8 @@
 #include "Level.h"
 
 static const  float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sent (1.0f = 100%)
-static const  float LATENCY = 200.f;	//Latency in MS	
+static const  float LATENCY = 0.f;	//Latency in MS	
+
 
 static const int NUM_PLAYERS = 1;
 

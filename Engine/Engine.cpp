@@ -85,13 +85,13 @@ int Engine::update(float delta) {
 	
 	int i = 0;
 
-	if (doPhysics) {
-		physDeltaCounter += delta;
-		while (physDeltaCounter > physDelta) {
-			physDeltaCounter -= physDelta;
-			p.update(physDelta);
-			++i;
-		}
+	
+	physDeltaCounter += delta;
+	while (physDeltaCounter > physDelta) {
+		physDeltaCounter -= physDelta;
+		if (doPhysics)
+		p.update(physDelta);
+		++i;
 	}
 	return i;
 	

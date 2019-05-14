@@ -17,6 +17,7 @@ namespace messages {
 		MT_PREDICTION_OTHER_POSITION,
 		MT_PREDICTION_DYNAMIC_POSITION,
 		MT_PREDICTION_PLAYER_POSITION,
+		MT_RUDP_SNAPSHOT,
 	};
 
 
@@ -67,6 +68,7 @@ namespace messages {
 	};
 
 	struct PayloadKeyPress {
+		unsigned int time;
 		char input;
 		float rot;
 	};
@@ -98,6 +100,13 @@ namespace messages {
 		Vec3f linVel;
 		Vec3f angVel;
 	};
+
+	struct PayloadRUDPSnapshot {
+		char players;
+		short dynamics;
+		char data[65450];
+	};
+
 
 	template <typename T>
 	MessageType getMessageType() {

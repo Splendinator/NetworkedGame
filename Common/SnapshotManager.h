@@ -21,24 +21,47 @@ public:
 	void addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, int id);
 	void addPlayer(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, int id);
 
-	void incrementTime() { ++_predictedTime; }
+	void estimatePlayer(Vec3f pos, float yaw, int playerId, int serverTime);
+
+	//void setBodyPrediction(int numObject, int )
+
+	void incrementTime() { ++_predictedTime; (++_indexMod) %= _numHistory; }
 
 	void setPredictedTime(int time) { _predictedTime = time; };
 
 	volatile bool ready = false;
 private:
 
+	int getIndex(int serverTime);
+
 	Physics *_physics;
 	std::thread *_worker;
 	
 	unsigned int _predictedTime = 0;
 
-	physx::PxRigidActor *_predictedBodies;
-	Networking::Player *_predictedPlayers;
+	struct DynamicEntry {
+		Vec3f pos;
+		Vec3f scale;
+		Quatf rot;
+		Vec3f linVol;
+		Vec3f AngVol;
+	};
+	struct PlayerEntry {
+		Vec3f pos;
+		float yaw;
+	};
 
-	unsigned int _actualTime;
 
-	bool _upToDate;
+	DynamicEntry *_predictedBodies;
+	PlayerEntry *_predictedPlayers;
+	int *_predictedCounters;
+
+	std::vector<physx::PxRigidActor *>_rbDynamics;
+	std::vector<physx::PxRigidActor *>_rbPlayers;
+
+	int _indexMod = 0;
+
+	
 
 	//float _physicsDelta = 0.1f;
 

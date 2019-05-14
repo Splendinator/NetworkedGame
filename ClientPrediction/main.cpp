@@ -1,7 +1,7 @@
 #include <iostream>
 #include "ClientFramework.cpp"
 
-
+unsigned int networkTime = 0;
 
 void preInit() {
 
@@ -13,8 +13,9 @@ void preInit() {
 void postInit() {
 	manager.addListener(messages::MT_PREDICTION_PLAYER_POSITION, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadPredictionPlayerPosition> *)m;
-		shared::getCurrPlayer().transform->setPos(p->payload.pos);
-		shared::getCurrPlayer().yaw = p->payload.movementDir;
+		//shared::getCurrPlayer().transform->setPos(p->payload.pos);
+		//shared::getCurrPlayer().yaw = p->payload.movementDir;
+		snapshotManager.estimatePlayer(p->payload.pos, p->payload.movementDir, shared::getCurrPlayerId(), p->payload.time);
 
 	});
 
@@ -64,7 +65,9 @@ void engineLoop(float delta) {
 }
 
 void networkLoop() {
+	messages::messageRef<messages::PayloadKeyPress>().payload.time = networkTime++;
 	manager.send(&messages::messageRef<messages::PayloadKeyPress>(), false);
+	//snapshotManager.incrementTime();
 }
 
 void physicsLoop() {

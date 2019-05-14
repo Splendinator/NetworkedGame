@@ -11,6 +11,7 @@ namespace shared {
 	void setPlayer( Transform *t, int id, float yaw = -1.f);
 
 	Networking::Player &getCurrPlayer();
+	int getCurrPlayerId();
 	void setCurrPlayer(int id);
 
 	void setPlayersUpright();

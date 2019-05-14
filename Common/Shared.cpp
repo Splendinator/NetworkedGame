@@ -14,6 +14,8 @@ namespace shared {
 
 	Player *player;
 
+	int pid = -1;
+
 }
 
 Transform *shared::getDynamic(int id)
@@ -41,8 +43,13 @@ Player &shared::getCurrPlayer()
 	return *player;
 }
 
+int shared::getCurrPlayerId() {
+	return pid;
+}
+
 void shared::setCurrPlayer(int id)
 {
+	pid = id;
 	player = &players[id];
 }
 
