@@ -34,28 +34,46 @@ public:
 	void syncDynamic(physx::PxRigidActor *a, int id) {
 		auto pose = a->getGlobalPose();
 			
-		pose.p.x = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].pos[0];
-		pose.p.y = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].pos[1];
-		pose.p.z = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].pos[2];
-
-		pose.q.x = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].rot.x;
-		pose.q.y = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].rot.y;
-		pose.q.z = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].rot.z;
-		pose.q.w = _predictedBodies[(_lastRealWorker - 1) * _numObjects + id].rot.w;
+		pose.p.x = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].pos[0];
+		pose.p.y = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].pos[1];
+		pose.p.z = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].pos[2];
+									
+		pose.q.x = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].rot.x;
+		pose.q.y = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].rot.y;
+		pose.q.z = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].rot.z;
+		pose.q.w = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].rot.w;
 
 		a->setGlobalPose(pose);
 	}
 
 	void syncPlayer(physx::PxRigidActor *a, int id) {
+		
+		if (_lastRealWorker != getIndex(_predictedTime)) { return; }
 		auto pose = a->getGlobalPose();
 
-		pose.p.x = _predictedPlayers[(_lastRealWorker - 1) * _numPlayers + id].pos[0];
-		pose.p.y = _predictedPlayers[(_lastRealWorker - 1) * _numPlayers + id].pos[1];
-		pose.p.z = _predictedPlayers[(_lastRealWorker - 1) * _numPlayers + id].pos[2];
+		physx::PxVec3 v = { _predictedPlayers[decrement(_lastRealWorker) * _numPlayers + id].pos[0],
+			_predictedPlayers[decrement(_lastRealWorker) * _numPlayers + id].pos[1],
+			_predictedPlayers[decrement(_lastRealWorker) * _numPlayers + id].pos[2]
+		};
+
+
+		//if ((v - pose.p).magnitude() > Networking::INTERP_MIN_DISE) {
+		//
+		//	v = (v - pose.p);
+		//
+		//	v *= Networking::INTERP_PCT;
+		//
+		//	pose.p += v;
+		//}
+		//else {
+			pose.p = v;
+		//}
 
 		a->setGlobalPose(pose);
 
 	}
+
+	void setPlayerYaw(float yaw, int id) { _playerRot[id] = yaw; }
 
 private:
 

@@ -124,6 +124,12 @@ void SnapshotManager::threadFunc()
 			}
 #pragma endregion
 
+			
+
+			_physics->update(Networking::PHYSICS_UPDATE_DELTA);
+
+
+
 			for (int i = 0; i < _numPlayers; ++i) {
 				Camera c;
 				c.pitch = 0;
@@ -136,12 +142,6 @@ void SnapshotManager::threadFunc()
 
 				}
 			}
-
-			_physics->update(Networking::PHYSICS_UPDATE_DELTA);
-
-
-
-
 
 
 			//for (int i = 0; i < _numPlayers; ++i) {
@@ -224,7 +224,7 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 		
 
 		changes |= !(_predictedPlayers[playerIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY));
-		changes |= !(_predictedPlayers[playerIndex + p->id].yaw == p->movementDir);
+		changes |= !(closeTo(_predictedPlayers[playerIndex + p->id].yaw,p->movementDir,Networking::ESTIMATE_FLOAT_LEEWAY));
 		//changes |= _playerRot[i] == p->movementDir;
 		//std::cout << _predictedPlayers[playerIndex + p->id].yaw << '\n' << p->movementDir << "\n\n";
 

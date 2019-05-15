@@ -11,7 +11,10 @@ namespace Networking {
 
 	static const float PLAYER_MOVE_SPEED = 0.1f;
 
-	static const float ESTIMATE_FLOAT_LEEWAY = 0.01f;
+	static const float ESTIMATE_FLOAT_LEEWAY = 0.001f;
+
+	static const float INTERP_PCT = 0.05f;
+	static const float INTERP_MIN_DISE = 0.1f;
 
 	struct Player {
 		Transform *transform;

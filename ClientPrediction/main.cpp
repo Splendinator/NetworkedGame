@@ -3,6 +3,8 @@
 
 unsigned int networkTime = 0;
 
+messages::PayloadKeyPress lastSentInput;
+
 void preInit() {
 
 	engine.setDoPhysics(false);
@@ -73,6 +75,8 @@ void engineLoop(float delta) {
 
 void networkLoop() {
 	messages::messageRef<messages::PayloadKeyPress>().payload.time = networkTime++;
+	lastSentInput.rot = messages::messageRef<messages::PayloadKeyPress>().payload.rot;
+	lastSentInput.input = messages::messageRef<messages::PayloadKeyPress>().payload.input;
 	manager.send(&messages::messageRef<messages::PayloadKeyPress>(), false);
 	
 }
@@ -84,5 +88,55 @@ void physicsLoop() {
 	for (int i = 0; i < readycheck::numDynamics; ++i) {
 		snapshotManager.syncDynamic(shared::getDynamic(i)->getRigidActor(), i);
 	}
+#pragma region GET_YAW
+	//auto &m = messages::messageRef<messages::PayloadKeyPress>();
+	Camera c;
+	Vec3f v = { 0,0,0 };
+	c.pitch = 0;
+	c.yaw = lastSentInput.rot;
+	float yaw = lastSentInput.rot;
+
+	while (yaw < 0) {
+		yaw += 2 * Math::PI;
+	}
+
+	if ((lastSentInput.input & 0b0011) == 0b0011)	//A and D cancel
+		lastSentInput.input -= 0b0011;
+	if ((lastSentInput.input & 0b1100) == 0b1100)	//W and S cancel
+		lastSentInput.input -= 0b1100;
+
+
+	switch (lastSentInput.input) {
+	case 0b0100:	//W
+		break;
+	case 0b1000:	//S
+		yaw += Math::PI;
+		break;
+	case 0b0001:	//D
+		yaw += Math::PI / 2;
+		break;
+	case 0b0010:	//A
+		yaw += 1.5f*Math::PI;
+		break;
+
+	case 0b0101:	//WD
+		yaw += Math::PI / 4;
+		break;
+	case 0b0110:	//WA
+		yaw += 7 * Math::PI / 4;
+		break;
+
+	case 0b1001:	//SD
+		yaw += 3 * Math::PI / 4;
+		break;
+	case 0b1010:	//SA
+		yaw += 5 * Math::PI / 4;
+		break;
+
+	default:
+		yaw = -1.f;
+	}
+#pragma endregion
 	snapshotManager.incrementTime();
+	snapshotManager.setPlayerYaw(yaw,shared::getCurrPlayerId());
 }

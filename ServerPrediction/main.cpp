@@ -4,7 +4,7 @@
 #include "ServerFramework.cpp"
 #include "../Engine/Math.h"
 
-static const int PACKET_BUFFER_SIZE = 16;	//Lockstep Buffer Size;
+static const int PACKET_BUFFER_SIZE = 10;	//Lockstep Buffer Size;
 
 //Buffer players' input for a few frames to avoid packet loss and keep all players in lock-step
 struct Input{
