@@ -49,7 +49,6 @@ int baseLoop(float delta) {
 	if (engine.getCamera()->pitch > 1.5f) engine.getCamera()->pitch = 1.5f;
 	if (engine.getCamera()->pitch < -1.5f) engine.getCamera()->pitch = -1.5f;
 
-	shared::setPlayersUpright();
 
 	return engine.update(delta);
 
@@ -81,6 +80,7 @@ void main() {
 		}
 		delta = deltaTimer.getDelta();
 		deltaTimer.resetTimer();
+		shared::setPlayersUpright();
 		runPhysics = baseLoop(delta);
 		for (int i = 0; i < runPhysics; ++i) {
 			physicsLoop();

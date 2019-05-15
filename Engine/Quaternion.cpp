@@ -16,6 +16,18 @@ Quaternion<T>::~Quaternion()
 }
 
 template<class T>
+Quaternion<T>::Quaternion(T xx, T yy , T zz , T ww) {
+	
+	x = xx;
+	y = yy;
+	z = zz;
+	w = ww;
+
+}
+
+
+
+template<class T>
 Quaternion<T> Quaternion<T>::quatFromEuler(Vector<T, 3> around, float rad)
 {
 	Quaternion<T> q;
@@ -26,6 +38,19 @@ Quaternion<T> Quaternion<T>::quatFromEuler(Vector<T, 3> around, float rad)
 	q.w = static_cast<T>(cos(rad / 2));
 
 	return q;
+}
+
+template<class T>
+bool Quaternion<T>::closeTo(const Quaternion<T> &other, float leeway) const
+{
+	bool different = false;
+	
+	different |= !(((x - leeway) < other.x) && ((x + leeway) > other.x));
+	different |= !(((y - leeway) < other.y) && ((y + leeway) > other.y));
+	different |= !(((z - leeway) < other.z) && ((z + leeway) > other.z));
+	different |= !(((w - leeway) < other.w) && ((w + leeway) > other.w));
+	
+	return !different;
 }
 
 template<class T>

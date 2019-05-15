@@ -31,6 +31,16 @@ const Vector<T, N>& Vector<T, N>::operator+=(const Vector<T, N>& other)
 }
 
 template<class T, int N>
+bool Vector<T,N>::operator==(const Vector<T, N> &other) const {
+	bool different = false;
+	for (int i = 0; i < N; ++i) {
+		different |= (data[0] != other.data[0]);
+	}
+	return !different;
+}
+
+
+template<class T, int N>
 const Vector<T, N>& Vector<T, N>::operator-=(const Vector<T, N>& other)
 {
 	for (int i = 0; i < N; ++i) {
@@ -61,6 +71,17 @@ Vector<T,N> &Vector<T, N>::normalize()
 	}
 	return *this;
 }
+
+template<class T, int N>
+bool Vector<T,N>::closeTo(const Vector<T, N> &other, float leeway) const
+{
+	bool different = false;
+	for (int i = 0; i < N; ++i) {
+		different |= !(((data[i] - leeway) < other[i]) && ((data[i] + leeway) > other[i]));
+	}
+	return !different;
+}
+
 
 template class Vector<float, 2>;
 template class Vector<float, 3>;

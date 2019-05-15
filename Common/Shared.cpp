@@ -63,6 +63,8 @@ void shared::setPlayersUpright()
 			physx::PxTransform transform = players[i].transform->getRigidActor()->getGlobalPose();
 			transform.q = { upright.x,upright.y,upright.z,upright.w };
 			players[i].transform->getRigidBody()->setGlobalPose(transform);
+			players[i].transform->getRigidBody()->setLinearVelocity({ 0,players[i].transform->getRigidBody()->getLinearVelocity().y,0 });
+			players[i].transform->getRigidBody()->setAngularVelocity({ 0,0,0 });
 		}
 	}
 	

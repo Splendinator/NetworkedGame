@@ -101,9 +101,26 @@ namespace messages {
 		Vec3f angVel;
 	};
 
+	//PlayerPosition - No Time
+	struct PayloadPredictionOtherPositionNT {
+		int id;
+		Vec3f pos;
+		float movementDir;
+	};
+
+	struct PayloadPredictionDynamicPositionNT {
+		int id;
+		Vec3f pos;
+		Quatf rot;
+		Vec3f linVel;
+		Vec3f angVel;
+	};
+
+
 	struct PayloadRUDPSnapshot {
 		char players;
 		short dynamics;
+		unsigned int time;
 		char data[65450];
 	};
 
@@ -142,6 +159,9 @@ namespace messages {
 		}
 		else if constexpr (std::is_same<T, PayloadPredictionPlayerPosition>::value) {
 			return MT_PREDICTION_PLAYER_POSITION;
+		}
+		else if constexpr (std::is_same<T, PayloadRUDPSnapshot>::value) {
+			return MT_RUDP_SNAPSHOT;
 		}
 
 		else {

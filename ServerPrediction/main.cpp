@@ -9,7 +9,6 @@ static const int PACKET_BUFFER_SIZE = 16;	//Lockstep Buffer Size;
 //Buffer players' input for a few frames to avoid packet loss and keep all players in lock-step
 struct Input{
 	float yaw;
-	unsigned int frameTime;
 };
 Input bufferInput[NUM_PLAYERS * PACKET_BUFFER_SIZE]{};
 
@@ -81,7 +80,7 @@ void preInit() {
 	if (dif < 0) dif = 0;
 	//bufferInput[((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i].input = m->payload.input;
 	bufferInput[((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i].yaw = yaw;
-	bufferInput[((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i].frameTime = frameNum;
+	
 
 	//std::cout << "Networked Time: " << networkTime << ", client time: " << m->payload.time << " bufferIndex = " << bufferIndex << "input index = " << ((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i << '\n';
 	
@@ -104,6 +103,9 @@ void postInit() {
 	for (int i = 0; i < NUM_PLAYERS; ++i) {
 		Level::loadPlayer(i, { float(5*i),15,0 });
 	}
+
+	messages::messageRef<messages::PayloadRUDPSnapshot>().payload.players = Level::getNumPlayers();
+	messages::messageRef<messages::PayloadRUDPSnapshot>().payload.dynamics = Level::getNumDynamics();
 	
 
 }
@@ -114,51 +116,92 @@ void networkLoop() {
 #pragma region INPUT_BUFFER
 	++bufferIndex %= PACKET_BUFFER_SIZE;
 	++networkTime;
-	for (int i = 0; i < NUM_PLAYERS; ++i) {
-		shared::getPlayer(i).yaw = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].yaw;
-	}
 
 #pragma endregion;
 
+	if (frameNum < ((Networking::NETWORK_UPDATE_DELTA / Networking::PHYSICS_UPDATE_DELTA) * PACKET_BUFFER_SIZE) + 0.5f) return;
+
+	auto &pl = messages::messageRef<messages::PayloadRUDPSnapshot>().payload;
+
+	pl.time = frameNum - ((Networking::NETWORK_UPDATE_DELTA / Networking::PHYSICS_UPDATE_DELTA) * PACKET_BUFFER_SIZE) + 0.5f;
+
+
+	int index = 0;
+
+	messages::PayloadPredictionOtherPositionNT playerPL;
+	messages::PayloadPredictionDynamicPositionNT dynamicPL;
+
 	for (int i = 0; i < NUM_PLAYERS; ++i) {
-		messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.pos = shared::getPlayer(i).transform->_pos;
-		messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.movementDir = shared::getPlayer(i).yaw;
-		messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.time = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].frameTime;
+		shared::getPlayer(i).yaw = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].yaw;
 
-		messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.pos = shared::getPlayer(i).transform->_pos;
-		messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.id = i;
-		messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.movementDir = shared::getPlayer(i).yaw;
-		messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.time = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].frameTime;
+		playerPL.id = i;
+		playerPL.movementDir = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].yaw;
+		playerPL.pos = shared::getPlayer(i).transform->_pos;
 
 
-
-		for (int j = 0; j < NUM_PLAYERS; ++j) {
-
-			if (i == j) {
-				manager.send(&messages::messageRef<messages::PayloadPredictionPlayerPosition>(), j, false);
-			}
-			else {
-				manager.send(&messages::messageRef<messages::PayloadPredictionOtherPosition>(), j, false);
-			}
-		}
-
-		auto &dynamicPayload = messages::messageRef<messages::PayloadPredictionDynamicPosition>().payload;
-		for (int j = 0; j < Level::getNumDynamics(); ++j) {
-
-
-			auto pos = shared::getDynamic(j)->getRigidActor()->getGlobalPose().p;
-			auto rot = shared::getDynamic(j)->getRigidActor()->getGlobalPose().q;
-
-			dynamicPayload.id = j;
-			dynamicPayload.pos = { pos.x,pos.y,pos.z };
-			dynamicPayload.rot.x = rot.x;
-			dynamicPayload.rot.y = rot.y;
-			dynamicPayload.rot.z = rot.z;
-			dynamicPayload.rot.w = rot.w;
-
-			manager.send(&messages::messageRef<messages::PayloadPredictionDynamicPosition>(), false);
-		}
+		memcpy((void *)&pl.data[index], &playerPL, sizeof(playerPL));
+		index += sizeof(playerPL);
+	
 	}
+	for (int j = 0; j < Level::getNumDynamics(); ++j) {
+	
+		auto pos = shared::getDynamic(j)->getRigidActor()->getGlobalPose().p;
+		auto rot = shared::getDynamic(j)->getRigidActor()->getGlobalPose().q;
+		auto linVel = shared::getDynamic(j)->getRigidBody()->getLinearVelocity();
+		auto angVel = shared::getDynamic(j)->getRigidBody()->getAngularVelocity();
+		
+		dynamicPL.id = j;
+		dynamicPL.angVel = { angVel.x,angVel.y,angVel.z };
+		dynamicPL.linVel = { linVel.x,linVel.y,linVel.z };
+		dynamicPL.pos = { pos.x,pos.y,pos.z };
+		dynamicPL.rot = Quatf(rot.x,rot.y,rot.z,rot.w);
+
+		memcpy((void *)&pl.data[index], &dynamicPL, sizeof(dynamicPL));
+		index += sizeof(dynamicPL);
+	}
+
+	messages::messageRef<messages::PayloadRUDPSnapshot>().setPayloadSize(index + sizeof(pl.time) + sizeof(pl.dynamics) + sizeof(pl.players));
+	manager.broadcast(&messages::messageRef<messages::PayloadRUDPSnapshot>());
+
+	//for (int i = 0; i < NUM_PLAYERS; ++i) {
+	//	messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.pos = shared::getPlayer(i).transform->_pos;
+	//	messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.movementDir = shared::getPlayer(i).yaw;
+	//	messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.time = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].frameTime;
+	//
+	//	messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.pos = shared::getPlayer(i).transform->_pos;
+	//	messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.id = i;
+	//	messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.movementDir = shared::getPlayer(i).yaw;
+	//	messages::messageRef<messages::PayloadPredictionOtherPosition>().payload.time = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].frameTime;
+	//
+	//
+	//
+	//	for (int j = 0; j < NUM_PLAYERS; ++j) {
+	//
+	//		if (i == j) {
+	//			manager.send(&messages::messageRef<messages::PayloadPredictionPlayerPosition>(), j, false);
+	//		}
+	//		else {
+	//			manager.send(&messages::messageRef<messages::PayloadPredictionOtherPosition>(), j, false);
+	//		}
+	//	}
+	//
+	//	auto &dynamicPayload = messages::messageRef<messages::PayloadPredictionDynamicPosition>().payload;
+	//	for (int j = 0; j < Level::getNumDynamics(); ++j) {
+	//
+	//
+	//		auto pos = shared::getDynamic(j)->getRigidActor()->getGlobalPose().p;
+	//		auto rot = shared::getDynamic(j)->getRigidActor()->getGlobalPose().q;
+	//
+	//		dynamicPayload.id = j;
+	//		dynamicPayload.pos = { pos.x,pos.y,pos.z };
+	//		dynamicPayload.rot.x = rot.x;
+	//		dynamicPayload.rot.y = rot.y;
+	//		dynamicPayload.rot.z = rot.z;
+	//		dynamicPayload.rot.w = rot.w;
+	//
+	//		manager.send(&messages::messageRef<messages::PayloadPredictionDynamicPosition>(), false);
+	//	}
+	//}
 
 }
 
@@ -179,6 +222,9 @@ void physicsLoop() {
 			auto pose = shared::getPlayer(i).transform->getRigidActor()->getGlobalPose();
 			pose.p += { v[0], v[1], v[2] };
 			shared::getPlayer(i).transform->getRigidActor()->setGlobalPose(pose);
+			
 		}
+		
 	}
+	
 }
