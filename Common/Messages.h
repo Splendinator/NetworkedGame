@@ -69,6 +69,7 @@ namespace messages {
 
 	struct PayloadKeyPress {
 		unsigned int time;
+		unsigned int physTime;
 		char input;
 		float rot;
 	};
@@ -106,6 +107,7 @@ namespace messages {
 		int id;
 		Vec3f pos;
 		float movementDir;
+		float yVel;
 	};
 
 	struct PayloadPredictionDynamicPositionNT {
@@ -121,6 +123,7 @@ namespace messages {
 		char players;
 		short dynamics;
 		unsigned int time;
+		unsigned int clientTime;
 		char data[65450];
 	};
 

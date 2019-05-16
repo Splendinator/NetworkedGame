@@ -5,6 +5,7 @@
 #include "Messages.h"
 #include "../Engine/Camera.h"
 #include "../Engine/Math.h"
+#include "Shared.h"
 
 int SnapshotManager::getIndex(int serverTime) {
 	int dif = _predictedTime - serverTime;
@@ -46,6 +47,9 @@ void SnapshotManager::initBuffers(int numObjects, int numPlayers, int numHistory
 	_predictedPlayers = new PlayerEntry[numPlayers * numHistory];
 	_predictedBodies = new DynamicEntry[numObjects * numHistory];
 
+	_myPlayerInputBuffer = new float[numHistory];
+	for (int i = 0; i < numHistory; ++i) _myPlayerInputBuffer[i] = -1.f;
+
 	//_predictedCounters = new int[numPlayers + numObjects] {};
 
 }
@@ -84,6 +88,8 @@ void SnapshotManager::threadFunc()
 				
 				_rbPlayers[i]->setGlobalPose(pose);
 				
+				_rbPlayers[i]->setLinearVelocity({ 0,player.yVel,0 });
+
 				_playerRot[i] = player.yaw;
 
 			}
@@ -133,8 +139,11 @@ void SnapshotManager::threadFunc()
 			for (int i = 0; i < _numPlayers; ++i) {
 				Camera c;
 				c.pitch = 0;
-				if (_playerRot[i] >= 0.f) {
-					c.yaw = _playerRot[i];
+				
+				float f = (i == shared::getCurrPlayerId()) ? _myPlayerInputBuffer[_lastRealWorker] : _playerRot[i];
+
+				if (f >= 0.f) {
+					c.yaw = f;
 					Vec3f v = c.foward() * Networking::PLAYER_MOVE_SPEED;
 					auto pose = _rbPlayers[i]->getGlobalPose();
 					pose.p += { v[0], v[1], v[2] };
@@ -202,7 +211,7 @@ bool closeTo(float a, float b, float leeway) {
 	return ((a - leeway) < b) && ((a + leeway) > b);
 }
 
-void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time) {
+void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time, int clientTime) {
 	
 	bool changes = false;
 
@@ -226,9 +235,13 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 		changes |= !(_predictedPlayers[playerIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY));
 		changes |= !(closeTo(_predictedPlayers[playerIndex + p->id].yaw,p->movementDir,Networking::ESTIMATE_FLOAT_LEEWAY));
 		//changes |= _playerRot[i] == p->movementDir;
-		//std::cout << _predictedPlayers[playerIndex + p->id].yaw << '\n' << p->movementDir << "\n\n";
+		//std::cout << "Ours: " << _predictedPlayers[playerIndex + p->id].yaw << "\nOurs+1: " << _predictedPlayers[playerIndex + p->id + 1].yaw << "\nOurs-1: " << _predictedPlayers[playerIndex + p->id - 1].yaw << "\nServers: " << p->movementDir << "\n\n";
 
-		//std::cout << (_predictedPlayers[playerIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << closeTo(_predictedPlayers[playerIndex + p->id].yaw,p->movementDir,Networking::ESTIMATE_FLOAT_LEEWAY) << " ";
+		//setPredictedTime(time - clientTime);
+
+		//std::cout << "Ours: " << _predictedPlayers[playerIndex + p->id].yaw << "\nOursOther: " << _playerRot[p->id] << "\nServers: " << p->movementDir << '\n' << _predictedTime << " " << time << " " << clientTime << "\n\n";
+
+		std::cout << (_predictedPlayers[playerIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << closeTo(_predictedPlayers[playerIndex + p->id].yaw,p->movementDir,Networking::ESTIMATE_FLOAT_LEEWAY) << " ";
 
 		//std::cout << _predictedPlayers[playerIndex + p->id].pos[0] << "\t\t" << p->pos[0] << '\n';
 		//std::cout << _predictedPlayers[playerIndex + p->id].pos[1] << "\t\t" << p->pos[1] << '\n';
@@ -240,6 +253,7 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 
 		_predictedPlayers[playerIndex + p->id].pos = p->pos;
 		_predictedPlayers[playerIndex + p->id].yaw = p->movementDir;
+		_predictedPlayers[playerIndex + p->id].yVel = p->yVel;
 
 		dataIndex += sizeof(messages::PayloadPredictionOtherPositionNT);
 	}
@@ -253,7 +267,7 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 		changes |= !(_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY));
 		changes |= !(_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY));
 
-		//std::cout << (_predictedBodies[dynamicIndex + p->id].AngVol.closeTo(p->angVel,Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].linVol.closeTo(p->linVel, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY))  << " " << (_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY)) << '\n';
+		std::cout << (_predictedBodies[dynamicIndex + p->id].AngVol.closeTo(p->angVel,Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].linVol.closeTo(p->linVel, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY))  << " " << (_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY)) << '\n';
 
 		//std::cout << _predictedBodies[dynamicIndex + p->id].pos[0] << " " << p->pos[0] << '\n';
 
@@ -273,6 +287,6 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 		_wrong = true;
 	}
 	else {
-		std::cout << '\n';
+		//std::cout << '\n';
 	}
 }

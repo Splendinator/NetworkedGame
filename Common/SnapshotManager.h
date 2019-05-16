@@ -21,13 +21,14 @@ public:
 	void addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, int id);
 	void addPlayer(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, int id);
 
-	void receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time);
+	void receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time, int clientTime);
 
 	//void setBodyPrediction(int numObject, int )
 
 	void incrementTime() { ++_predictedTime; (++_indexMod) %= _numHistory; }
 
 	void setPredictedTime(int time) { _predictedTime = time; };
+	unsigned int getPredictedTime() { return _predictedTime; };
 
 	volatile bool ready = false;
 
@@ -73,7 +74,8 @@ public:
 
 	}
 
-	void setPlayerYaw(float yaw, int id) { _playerRot[id] = yaw; }
+	void setPlayerYaw(float yaw, int id) { _playerRot[id] = yaw;}
+	void setCurrPlayerYaw(float yaw) { _myPlayerInputBuffer[_indexMod] = yaw; }
 
 private:
 
@@ -99,6 +101,7 @@ private:
 	struct PlayerEntry {
 		Vec3f pos;
 		float yaw;
+		float yVel;
 	};
 
 
@@ -106,6 +109,7 @@ private:
 	PlayerEntry *_predictedPlayers;
 	
 	
+	float *_myPlayerInputBuffer;
 
 	float _playerRot[Networking::MAX_PLAYERS];
 	physx::PxRigidBody * _rbPlayers[Networking::MAX_PLAYERS];

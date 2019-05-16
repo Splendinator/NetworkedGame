@@ -9,6 +9,7 @@ static const int PACKET_BUFFER_SIZE = 10;	//Lockstep Buffer Size;
 //Buffer players' input for a few frames to avoid packet loss and keep all players in lock-step
 struct Input{
 	float yaw;
+	unsigned int time;
 };
 Input bufferInput[NUM_PLAYERS * PACKET_BUFFER_SIZE]{};
 
@@ -28,6 +29,7 @@ void preInit() {
 	manager.addListener(messages::MT_KEY_PRESS, [&](BaseMessage *bm, int i) {
 		auto  m = (Message<messages::PayloadKeyPress> *)bm;
 		//auto &p = shared::getPlayer(i);
+		
 		Camera c;
 		Vec3f v = { 0,0,0 };
 		c.pitch = 0;
@@ -80,7 +82,7 @@ void preInit() {
 	if (dif < 0) dif = 0;
 	//bufferInput[((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i].input = m->payload.input;
 	bufferInput[((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i].yaw = yaw;
-	
+	bufferInput[((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i].time = m->payload.physTime;
 
 	//std::cout << "Networked Time: " << networkTime << ", client time: " << m->payload.time << " bufferIndex = " << bufferIndex << "input index = " << ((bufferIndex + PACKET_BUFFER_SIZE - dif) % PACKET_BUFFER_SIZE) + PACKET_BUFFER_SIZE * i << '\n';
 	
@@ -113,17 +115,17 @@ void postInit() {
 
 
 void networkLoop() {
+	
 #pragma region INPUT_BUFFER
 	++bufferIndex %= PACKET_BUFFER_SIZE;
 	++networkTime;
-
 #pragma endregion;
 
-	if (frameNum < ((Networking::NETWORK_UPDATE_DELTA / Networking::PHYSICS_UPDATE_DELTA) * PACKET_BUFFER_SIZE) + 0.5f) return;
+	if (frameNum < ((Networking::NETWORK_UPDATE_DELTA / Networking::PHYSICS_UPDATE_DELTA) * PACKET_BUFFER_SIZE)) return;
 
 	auto &pl = messages::messageRef<messages::PayloadRUDPSnapshot>().payload;
 
-	pl.time = frameNum - ((Networking::NETWORK_UPDATE_DELTA / Networking::PHYSICS_UPDATE_DELTA) * PACKET_BUFFER_SIZE) + 0.5f;
+	pl.time = (frameNum - (Networking::NETWORK_UPDATE_DELTA / Networking::PHYSICS_UPDATE_DELTA) * PACKET_BUFFER_SIZE) + 2;
 
 
 	int index = 0;
@@ -137,6 +139,7 @@ void networkLoop() {
 		playerPL.id = i;
 		playerPL.movementDir = bufferInput[i * PACKET_BUFFER_SIZE + bufferIndex].yaw;
 		playerPL.pos = shared::getPlayer(i).transform->_pos;
+		playerPL.yVel = shared::getPlayer(i).transform->getRigidBody()->getLinearVelocity().y;
 
 
 		memcpy((void *)&pl.data[index], &playerPL, sizeof(playerPL));
@@ -160,8 +163,12 @@ void networkLoop() {
 		index += sizeof(dynamicPL);
 	}
 
-	messages::messageRef<messages::PayloadRUDPSnapshot>().setPayloadSize(index + sizeof(pl.time) + sizeof(pl.dynamics) + sizeof(pl.players));
+	//TODO: MULTIPLAYER SUPPORT
+	pl.clientTime = bufferInput[bufferIndex].time;
+
+	messages::messageRef<messages::PayloadRUDPSnapshot>().setPayloadSize(index + sizeof(pl.time) + sizeof(pl.dynamics) + sizeof(pl.players) + sizeof(pl.clientTime));
 	manager.broadcast(&messages::messageRef<messages::PayloadRUDPSnapshot>());
+
 
 	//for (int i = 0; i < NUM_PLAYERS; ++i) {
 	//	messages::messageRef<messages::PayloadPredictionPlayerPosition>().payload.pos = shared::getPlayer(i).transform->_pos;

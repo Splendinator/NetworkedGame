@@ -38,7 +38,7 @@ void postInit() {
 	manager.addListener(messages::MT_RUDP_SNAPSHOT, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadRUDPSnapshot> *)m;
 		
-		snapshotManager.receiveSnapshotFromServer(p->payload.data, p->payload.players, p->payload.dynamics, p->payload.time);
+		snapshotManager.receiveSnapshotFromServer(p->payload.data, p->payload.players, p->payload.dynamics, p->payload.time, p->payload.clientTime);
 	});
 }
 
@@ -75,6 +75,7 @@ void engineLoop(float delta) {
 
 void networkLoop() {
 	messages::messageRef<messages::PayloadKeyPress>().payload.time = networkTime++;
+	messages::messageRef<messages::PayloadKeyPress>().payload.physTime = snapshotManager.getPredictedTime();
 	lastSentInput.rot = messages::messageRef<messages::PayloadKeyPress>().payload.rot;
 	lastSentInput.input = messages::messageRef<messages::PayloadKeyPress>().payload.input;
 	manager.send(&messages::messageRef<messages::PayloadKeyPress>(), false);
@@ -137,6 +138,8 @@ void physicsLoop() {
 		yaw = -1.f;
 	}
 #pragma endregion
+	snapshotManager.setCurrPlayerYaw(yaw);
 	snapshotManager.incrementTime();
-	snapshotManager.setPlayerYaw(yaw,shared::getCurrPlayerId());
+	//snapshotManager.setPlayerYaw(yaw,shared::getCurrPlayerId());
+	
 }

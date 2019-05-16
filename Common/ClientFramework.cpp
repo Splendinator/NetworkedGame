@@ -64,7 +64,7 @@ void initLevelLoading() {
 		shared::getCurrPlayer().transform->getRigidBody()->setMass(200000.f);
 		shared::getCurrPlayer().transform->getRigidBody()->setLinearDamping(0.5f);
 		++readycheck::currPlayers;
-		snapshotManager.addPlayer(p->payload.pos, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, false);
+		snapshotManager.addPlayer(p->payload.pos, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, p->payload.playerId);
 	});
 
 	manager.addListener(messages::MT_LOAD_LEVEL_OTHER, [&](BaseMessage *m) {
@@ -73,6 +73,7 @@ void initLevelLoading() {
 		shared::getPlayer(p->payload.playerId).transform->getRigidBody()->setMass(200000.f);
 		shared::getPlayer(p->payload.playerId).transform->getRigidBody()->setLinearDamping(0.5f);
 		++readycheck::currPlayers;
+		snapshotManager.addPlayer(p->payload.pos, { 1,1,1 }, Quatf::quatFromEuler({ 0,0,1 }, (Math::PI) / 2.f), true, p->payload.playerId);
 	});
 }
 
@@ -101,7 +102,7 @@ void main() {
 
 	//Wait for client to load everything.
 	while (readycheck::currPlayers != readycheck::numPlayers && readycheck::currObjects != readycheck::numObjects) {
-		manager.update();
+		manager.update();	
 	}
 	snapshotManager.initBuffers(readycheck::numDynamics, readycheck::numPlayers, SNAPSHOT_HISTORY);
 

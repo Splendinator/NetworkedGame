@@ -73,7 +73,7 @@ namespace Level {
 		messages::messageRef<messages::PayloadReady>().payload.numObjects = numObjects;
 		messages::messageRef<messages::PayloadReady>().payload.numPlayers = numPlayers;
 		messages::messageRef<messages::PayloadReady>().payload.epoch = std::chrono::system_clock::now().time_since_epoch().count();
-		s->send(&messages::messageRef<messages::PayloadReady>(), 0);
+		s->broadcast(&messages::messageRef<messages::PayloadReady>());
 	}
 
 	int getNumDynamics()
