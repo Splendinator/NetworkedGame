@@ -46,8 +46,8 @@ void ManagerServer::broadcast(domnet::BaseMessage *m, bool useTCP, bool useLaten
 	}
 	else {
 		processBandwidth(m);
+		//if (m->type == 7) { puts("Sent!"); }
 		_server->broadcast(m, (useTCP ? domnet::DN_TCP : domnet::DN_UDP));
-		if (m->type == 7) { puts("Sent!"); }
 	}
 }
 
@@ -137,33 +137,34 @@ void ManagerServer::delayedUpdate()
 
 	curr = std::chrono::system_clock::now();
 	millis = 1000 * (curr - prev).count() / std::chrono::system_clock::period::den;
-	//for (auto it = _delayedFuncs.begin(); it != _delayedFuncs.end(); ++it) {
-	//	it->_millis -= millis;
-	//
-	//	if (it->_millis < 0) {
-	//		send(it->m, (it->useTCP ? domnet::DN_TCP : domnet::DN_UDP), false);
-	//		delMessage(it->m);
-	//		it = _delayedFuncs.erase(it);
-	//	}
-	//}
+
+
+	start:
 	for (auto it = _delayedFuncsSend.begin(); it != _delayedFuncsSend.end(); ++it) {
 		it->_millis -= millis;
 
 		if (it->_millis < 0) {
 			send(it->m,it->playerId, (it->useTCP ? domnet::DN_TCP : domnet::DN_UDP), false);
+			
 			delMessageSend(it->m);
+			
 			it = _delayedFuncsSend.erase(it);
-			if (_delayedFuncsSend.size() == 0) break;
+			if (it == _delayedFuncsSend.end())
+				break;
 		}
 	}
+	//TODO:FIX THIS PROPERLY
 	for (auto it = _delayedFuncsBroadcast.begin(); it != _delayedFuncsBroadcast.end(); ++it) {
 		it->_millis -= millis;
 
 		if (it->_millis < 0) {
 			broadcast(it->m, (it->useTCP ? domnet::DN_TCP : domnet::DN_UDP), false);
+			
 			delMessageBroadcast(it->m);
+			
 			it = _delayedFuncsBroadcast.erase(it);
-			if (_delayedFuncsBroadcast.size() == 0) break;
+			if (it == _delayedFuncsBroadcast.end())
+				break;
 		}
 	}
 	prev = curr;

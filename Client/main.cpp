@@ -6,7 +6,9 @@
 void preInit() {
 
 	engine.setDoPhysics(false);
+}
 
+void postInit() {
 	manager.addListener(messages::MT_PLAYER_POSITION, [&](BaseMessage *m) {
 		auto p = (domnet::Message<messages::PayloadPlayerPosition> *)m;
 		shared::getCurrPlayer().transform->setPos(p->payload.pos);
@@ -24,10 +26,6 @@ void preInit() {
 		transform.p = { p->payload.pos[0], p->payload.pos[1], p->payload.pos[2] };
 		shared::getDynamic(p->payload.id)->getRigidBody()->setGlobalPose(transform);
 	});
-}
-
-void postInit() {
-
 }
 
 void engineLoop(float delta) {

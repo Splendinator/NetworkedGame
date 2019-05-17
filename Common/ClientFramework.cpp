@@ -7,7 +7,7 @@
 static float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sent (1.0f = 100%)
 static float LATENCY = 0.f;	//Latency in MS	
 
-static const int SNAPSHOT_HISTORY = 30;
+static const int SNAPSHOT_HISTORY = 80;
 
 static const char *IP_ADDRESS = "127.0.0.1";
 

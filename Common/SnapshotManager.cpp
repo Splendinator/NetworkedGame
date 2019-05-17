@@ -211,7 +211,7 @@ bool closeTo(float a, float b, float leeway) {
 	return ((a - leeway) < b) && ((a + leeway) > b);
 }
 
-void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time, int clientTime) {
+void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time) {
 	
 	bool changes = false;
 
@@ -239,9 +239,9 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 
 		//setPredictedTime(time - clientTime);
 
-		//std::cout << "Ours: " << _predictedPlayers[playerIndex + p->id].yaw << "\nOursOther: " << _playerRot[p->id] << "\nServers: " << p->movementDir << '\n' << _predictedTime << " " << time << " " << clientTime << "\n\n";
+		//std::cout << "Ours: " << _predictedPlayers[playerIndex + p->id].yaw << "\nServers: " << p->movementDir << '\n' << _predictedTime << " " << time << " " << clientTime << "\n\n";
 
-		std::cout << (_predictedPlayers[playerIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << closeTo(_predictedPlayers[playerIndex + p->id].yaw,p->movementDir,Networking::ESTIMATE_FLOAT_LEEWAY) << " ";
+		//std::cout << (_predictedPlayers[playerIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << closeTo(_predictedPlayers[playerIndex + p->id].yaw,p->movementDir,Networking::ESTIMATE_FLOAT_LEEWAY) << " ";
 
 		//std::cout << _predictedPlayers[playerIndex + p->id].pos[0] << "\t\t" << p->pos[0] << '\n';
 		//std::cout << _predictedPlayers[playerIndex + p->id].pos[1] << "\t\t" << p->pos[1] << '\n';
@@ -267,7 +267,7 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 		changes |= !(_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY));
 		changes |= !(_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY));
 
-		std::cout << (_predictedBodies[dynamicIndex + p->id].AngVol.closeTo(p->angVel,Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].linVol.closeTo(p->linVel, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY))  << " " << (_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY)) << '\n';
+		//std::cout << (_predictedBodies[dynamicIndex + p->id].AngVol.closeTo(p->angVel,Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].linVol.closeTo(p->linVel, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY))  << " " << (_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY)) << '\n';
 
 		//std::cout << _predictedBodies[dynamicIndex + p->id].pos[0] << " " << p->pos[0] << '\n';
 

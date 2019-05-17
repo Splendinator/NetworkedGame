@@ -7,7 +7,7 @@ static const  float PACKET_DROP_PCT = 0.f;	//Chance of UDP packets to not be sen
 static const  float LATENCY = 0.f;	//Latency in MS	
 
 
-static const int NUM_PLAYERS = 2;
+static const int NUM_PLAYERS = 1;
 
 static const float CAMERA_MOVE_SPEED = 0.02f;
 static const float CAMERA_SENSITIVITY = 200.f;

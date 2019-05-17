@@ -21,7 +21,7 @@ public:
 	void addCube(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, int id);
 	void addPlayer(Vec3f pos, Vec3f scale, Quatf rot, bool dynamic, int id);
 
-	void receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time, int clientTime);
+	void receiveSnapshotFromServer(char *data, int numPlayers, int numDynamics, int time);
 
 	//void setBodyPrediction(int numObject, int )
 
@@ -33,6 +33,9 @@ public:
 	volatile bool ready = false;
 
 	void syncDynamic(physx::PxRigidActor *a, int id) {
+
+		if (_lastRealWorker != getIndex(_predictedTime)) { return; }
+
 		auto pose = a->getGlobalPose();
 			
 		pose.p.x = _predictedBodies[decrement(_lastRealWorker) * _numObjects + id].pos[0];

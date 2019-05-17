@@ -1,6 +1,7 @@
 #include "../Engine/Quaternion.h"
 #include "Message.h"
 #include <type_traits>
+#include "Definitions.h"
 
 
 namespace messages {
@@ -18,6 +19,7 @@ namespace messages {
 		MT_PREDICTION_DYNAMIC_POSITION,
 		MT_PREDICTION_PLAYER_POSITION,
 		MT_RUDP_SNAPSHOT,
+		MT_KEY_PRESS_BUFFERED,
 	};
 
 
@@ -74,6 +76,13 @@ namespace messages {
 		float rot;
 	};
 
+	struct PayloadKeyPressBuffered {
+		unsigned int time;
+		unsigned int physTime;
+		char input[Networking::INPUT_BUFFER_AMMOUNT];
+		float rot[Networking::INPUT_BUFFER_AMMOUNT];
+	};
+
 
 	//*** Clock Synced Messages ***
 
@@ -123,7 +132,7 @@ namespace messages {
 		char players;
 		short dynamics;
 		unsigned int time;
-		unsigned int clientTime;
+		//unsigned int clientTime;
 		char data[65450];
 	};
 
@@ -165,6 +174,9 @@ namespace messages {
 		}
 		else if constexpr (std::is_same<T, PayloadRUDPSnapshot>::value) {
 			return MT_RUDP_SNAPSHOT;
+		}
+		else if constexpr (std::is_same<T, PayloadKeyPressBuffered>::value) {
+			return MT_KEY_PRESS_BUFFERED;
 		}
 
 		else {
