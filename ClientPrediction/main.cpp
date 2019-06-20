@@ -53,7 +53,7 @@ void engineLoop(float delta) {
 
 void networkLoop() {
 	messages::messageRef<messages::PayloadKeyPressBuffered>().payload.time = networkTime++;
-	messages::messageRef<messages::PayloadKeyPressBuffered>().payload.physTime = snapshotManager.getPredictedTime();
+	messages::messageRef<messages::PayloadKeyPressBuffered>().payload.physTime[0] = snapshotManager.getPredictedTime();
 	lastSentInput.rot = messages::messageRef<messages::PayloadKeyPressBuffered>().payload.rot[0];
 	lastSentInput.input = messages::messageRef<messages::PayloadKeyPressBuffered>().payload.input[0];
 	
@@ -62,6 +62,7 @@ void networkLoop() {
 	for (int i = Networking::INPUT_BUFFER_AMMOUNT - 1; i > 0; --i) {
 		messages::messageRef<messages::PayloadKeyPressBuffered>().payload.input[i] = messages::messageRef<messages::PayloadKeyPressBuffered>().payload.input[i - 1];
 		messages::messageRef<messages::PayloadKeyPressBuffered>().payload.rot[i] = messages::messageRef<messages::PayloadKeyPressBuffered>().payload.rot[i - 1];
+		messages::messageRef<messages::PayloadKeyPressBuffered>().payload.physTime[i] = messages::messageRef<messages::PayloadKeyPressBuffered>().payload.physTime[i - 1];
 	}
 	
 }

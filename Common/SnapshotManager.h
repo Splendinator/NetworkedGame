@@ -34,7 +34,7 @@ public:
 
 	void syncDynamic(physx::PxRigidActor *a, int id) {
 
-		if (_lastRealWorker != getIndex(_predictedTime)) { return; }
+		//if (_lastRealWorker != getIndex(_predictedTime)) { return; }
 
 		auto pose = a->getGlobalPose();
 			
@@ -52,7 +52,7 @@ public:
 
 	void syncPlayer(physx::PxRigidActor *a, int id) {
 		
-		if (_lastRealWorker != getIndex(_predictedTime)) { return; }
+		//if (_lastRealWorker != getIndex(_predictedTime)) { return; }
 		auto pose = a->getGlobalPose();
 
 		physx::PxVec3 v = { _predictedPlayers[decrement(_lastRealWorker) * _numPlayers + id].pos[0],

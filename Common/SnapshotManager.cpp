@@ -264,29 +264,30 @@ void SnapshotManager::receiveSnapshotFromServer(char *data, int numPlayers, int 
 
 		changes |= !(_predictedBodies[dynamicIndex + p->id].AngVol.closeTo(p->angVel, Networking::ESTIMATE_FLOAT_LEEWAY));
 		changes |= !(_predictedBodies[dynamicIndex + p->id].linVol.closeTo(p->linVel, Networking::ESTIMATE_FLOAT_LEEWAY));
-		changes |= !(_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY));
-		changes |= !(_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY));
+		changes |= !(_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos,       Networking::ESTIMATE_FLOAT_LEEWAY));
+		changes |= !(_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot,       Networking::ESTIMATE_FLOAT_LEEWAY));
+
+		
 
 		//std::cout << (_predictedBodies[dynamicIndex + p->id].AngVol.closeTo(p->angVel,Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].linVol.closeTo(p->linVel, Networking::ESTIMATE_FLOAT_LEEWAY)) << " " << (_predictedBodies[dynamicIndex + p->id].pos.closeTo(p->pos, Networking::ESTIMATE_FLOAT_LEEWAY))  << " " << (_predictedBodies[dynamicIndex + p->id].rot.closeTo(p->rot, Networking::ESTIMATE_FLOAT_LEEWAY)) << '\n';
 
-		//std::cout << _predictedBodies[dynamicIndex + p->id].pos[0] << " " << p->pos[0] << '\n';
+		std::cout << _predictedBodies[dynamicIndex + p->id].pos[0] << " " << p->pos[0] << '\n';
 
 		(_predictedBodies[dynamicIndex + p->id].AngVol = p->angVel);
 		(_predictedBodies[dynamicIndex + p->id].linVol = p->linVel);
 		(_predictedBodies[dynamicIndex + p->id].pos = p->pos);
 		(_predictedBodies[dynamicIndex + p->id].rot = p->rot);
 	}
-	
+	std::cout << '\n';
 
 	
 
 
 	if (changes) {
 		_lastRealMain = index;
-		std::cout << "Changes\n";
 		_wrong = true;
 	}
 	else {
-		//std::cout << '\n';
+
 	}
 }

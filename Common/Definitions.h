@@ -8,7 +8,7 @@ namespace Networking {
 
 	static const int INPUT_BUFFER_AMMOUNT = 8;
 
-	static const float NETWORK_UPDATE_DELTA = 1 / 16.f;
+	static const float NETWORK_UPDATE_DELTA = 1 / 64.f;
 	static const float PHYSICS_UPDATE_DELTA = 1 / 64.f;
 
 	static const float PLAYER_MOVE_SPEED = 0.1f;

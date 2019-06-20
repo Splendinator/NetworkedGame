@@ -70,12 +70,12 @@ void ManagerBase::updateBandwidth()
 	prev = curr;
 
 	if (millis > 1000) {
-		while (bitties > 1000) {
-			++index;
-			bitties /= 1000;
-		}
+		//while (bitties > 1000) {
+		//	++index;
+		//	bitties /= 1000;
+		//}
 
-		fs << bitties << " " << suffix[index] << '\n';
+		fs << bitties << '\n';// << " " << suffix[index] << '\n';
 		bitties = 0;
 		millis -= 1000;
 	}

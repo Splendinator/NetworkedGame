@@ -78,7 +78,7 @@ namespace messages {
 
 	struct PayloadKeyPressBuffered {
 		unsigned int time;
-		unsigned int physTime;
+		unsigned int physTime[Networking::INPUT_BUFFER_AMMOUNT];
 		char input[Networking::INPUT_BUFFER_AMMOUNT];
 		float rot[Networking::INPUT_BUFFER_AMMOUNT];
 	};

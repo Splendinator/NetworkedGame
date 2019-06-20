@@ -6,7 +6,7 @@ namespace domnet {
 	#define DEFAULT_PORT_SERV 2345
 	#define DEFAULT_PORT_CLIENT 2346
 	#define DEFAULT_PORT_STR "2345"
-	#define BUF_SIZE 1024
+	#define BUF_SIZE 65535 
 	#define MESSAGE_QUEUE_SIZE 64
 	#define SERVER_MAX_CLIENTS 16
 	
